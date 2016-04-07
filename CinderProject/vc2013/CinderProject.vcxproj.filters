@@ -1,0 +1,94 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{5DB2760E-988F-486B-BC5C-FB3FEFF5E898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\RTR">
+      <UniqueIdentifier>{35FA598E-840A-43A1-A666-14F16E883D91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\RTR\src">
+      <UniqueIdentifier>{9B02F3D3-0537-417A-B6EE-3A8D5A68F13B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\RTR\src\RTR">
+      <UniqueIdentifier>{F87B5F44-C101-4B4B-8209-E068EE65B279}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\RTR\include">
+      <UniqueIdentifier>{C88F5A5B-EE16-48A1-B14F-C782B2FEA44F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\RTR\include\RTR">
+      <UniqueIdentifier>{47CBFA05-BA90-49E5-9EED-3B8DE9B2575C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\CinderProjectApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\src\CinderProjectApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\src\RTR\Material.cpp">
+      <Filter>Blocks\RTR\src\RTR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\src\RTR\ObjLoader.cpp">
+      <Filter>Blocks\RTR\src\RTR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\src\RTR\SceneGraph.cpp">
+      <Filter>Blocks\RTR\src\RTR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\src\RTR\WatchThis.cpp">
+      <Filter>Blocks\RTR\src\RTR</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\src\RTR\tiny_obj_loader.cc">
+      <Filter>Blocks\RTR\src\RTR</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\Material.hpp">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\ObjLoader.hpp">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\SceneGraph.hpp">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\WatchThis.hpp">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\Resources.h">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\RTR.h">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\tiny_obj_loader.h">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\cinder_0.9.0_vc2013\blocks\rtr-cinder-block-master\include\RTR\RTR.h">
+      <Filter>Blocks\RTR\include\RTR</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
