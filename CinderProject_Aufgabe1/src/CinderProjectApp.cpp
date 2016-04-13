@@ -27,6 +27,8 @@ class CinderProjectApp : public App
     // called once for every frame to be rendered
     void draw() override;
 
+	void keyDown() override;
+
   private:
     
     // rotation
@@ -36,7 +38,7 @@ class CinderProjectApp : public App
     double lastTime = getElapsedSeconds();
 
     // models
-    rtr::ModelRef duck;
+    rtr::ModelRef graka;
 
     // used to track when files have changed
     rtr::WatchThis watcher;
@@ -52,14 +54,14 @@ CinderProjectApp::setup()
       { getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 
     // Load the duck model and use the lambert shader on it.
-    duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
+	graka = rtr::loadObjFile(getAssetPath("graka/Geforce8500.obj"), true, lambert);
 
     // Try this version of the duck to see the default shader for OBJ
     // models.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
 
     // update duck whenever a related asset changes
-    watcher.watchForUpdates({ duck });
+	watcher.watchForUpdates({ graka });
 }
 
 // place all non-OpenGL once-per-frame code here
@@ -103,10 +105,16 @@ CinderProjectApp::draw()
     gl::rotate(angle, vec3(1, 1, 1));
 
     // draw the duck model
-    duck->draw();
+	graka->draw();
 
     // restore the previous model-view-projection matrix
     gl::popModelMatrix();
+}
+
+void
+CinderProjectApp::keyDown()
+{
+	
 }
 
 void
