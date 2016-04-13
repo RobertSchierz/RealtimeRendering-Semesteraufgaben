@@ -27,9 +27,17 @@ class CinderProjectApp : public App
     // called once for every frame to be rendered
     void draw() override;
 
-	void keyDown() override;
+	void keyDown();
+
+	void mouseDown(MouseEvent event);
+
+	void mouseMove(MouseEvent event);
+
+	void mouseDrag(MouseEvent event);
 
   private:
+
+	  ivec2 mMouseLoc;
     
     // rotation
     double angle = 0.0;
@@ -115,6 +123,23 @@ void
 CinderProjectApp::keyDown()
 {
 	
+}
+
+
+void CinderProjectApp::mouseDown(MouseEvent event) {
+	if (event.isRight() && event.isShiftDown()) {
+		console() << "Special thing happened!" << std::endl;
+	}
+}
+
+
+void CinderProjectApp::mouseMove(MouseEvent event) {
+	mMouseLoc = event.getPos();
+	console() << mMouseLoc << std::endl;
+}
+
+void CinderProjectApp::mouseDrag(MouseEvent event) {
+	mouseMove(event);
 }
 
 void
