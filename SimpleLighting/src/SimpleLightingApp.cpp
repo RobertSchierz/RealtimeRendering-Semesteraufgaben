@@ -11,6 +11,7 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+using namespace rtr;
 
 // App template for the Real Time Rendering course, inherits from Cinder App.
 class SimpleLightingApp : public App
@@ -32,7 +33,9 @@ class SimpleLightingApp : public App
     // Tracking time between two draw() calls.
     double lastTime = getElapsedSeconds();
 
-    // Model of the duck that is displayed.
+	std::vector<MaterialRef> mMaterials;
+
+	// Model of the duck that is displayed.
     rtr::ModelRef duck;
 };
 
@@ -45,11 +48,16 @@ SimpleLightingApp::setup()
     getWindow()->setAlwaysOnTop();
 
     // Create a live-reloading shader program.
-    auto lambert = rtr::watcher.createWatchedProgram(
-      { getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
+    //auto lambert = rtr::watcher.createWatchedProgram(
+      //{ getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
+
+	auto myphong = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });
+	mMaterials.push_back(Material::create(myphong));
+	  
 
     // Load the duck model and use the lambert shader on it.
-    duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
+    duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, myphong);
 
     // The shader program can also be replaced after the fact.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
@@ -94,6 +102,16 @@ SimpleLightingApp::draw()
     // Enable depth buffering.
     gl::enableDepthWrite();
     gl::enableDepthRead();
+
+	mMaterials[1]->uniform("ciModelViewProjection", camera);
+	mMaterials[1]->uniform("ciModelView",mat4(	1, 0, 0, 0,
+												0, 1, 0, 0,
+												0, 0, 1, 0,
+												0, 0, 0, 1));
+	mMaterials[1]->uniform("ciNormalMatrix", mat4(	0.5f, 0, 0, 0,
+													0, 1, 0, 0,
+													0, -0.02f, 1, 0,
+													0, 0, -0.98f, 1));
 
     // Save current model-view-projection matrix by pushing a new matrix on top.
     gl::pushModelMatrix();
