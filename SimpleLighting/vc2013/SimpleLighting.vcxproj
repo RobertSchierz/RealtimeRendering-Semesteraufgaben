@@ -10,7 +10,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5CE45326-BE43-45C4-9E51-5A612B107E47}</ProjectGuid>
+    <ProjectGuid>{88388345-0252-42AD-AEBF-341D50C90E0D}</ProjectGuid>
     <RootNamespace>SimpleLighting</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

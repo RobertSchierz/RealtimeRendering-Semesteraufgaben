@@ -11,12 +11,13 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-using namespace rtr;
 
 // App template for the Real Time Rendering course, inherits from Cinder App.
 class SimpleLightingApp : public App
 {
   public:
+
+	  //SimpleLightingApp(){}
     // Called once when the App starts, after OpenGL has been initialized.
     void setup() override;
 
@@ -33,9 +34,9 @@ class SimpleLightingApp : public App
     // Tracking time between two draw() calls.
     double lastTime = getElapsedSeconds();
 
-	std::vector<MaterialRef> mMaterials;
+	rtr::MaterialRef mMaterial;
 
-	// Model of the duck that is displayed.
+    // Model of the duck that is displayed.
     rtr::ModelRef duck;
 };
 
@@ -51,13 +52,23 @@ SimpleLightingApp::setup()
     //auto lambert = rtr::watcher.createWatchedProgram(
       //{ getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 
-	auto myphong = rtr::watcher.createWatchedProgram(
+	auto phong = rtr::watcher.createWatchedProgram(
 		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });
-	mMaterials.push_back(Material::create(myphong));
-	  
+
+	//mMaterial = rtr::Material::create(phong);
+
+	//float shininess = 100;
+
+	phong->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
+	phong->uniform("k_diffuse", vec3(1, 0, 0));
+	phong->uniform("k_specular", vec3(1, 1, 1));
+	phong->uniform("shininess", float(10));
+	phong->uniform("ambientLightColor", vec3(0, 0, 0));
+	phong->uniform("lightColor", vec3(1, 1, 1));
+	phong->uniform("lightPositionEC", vec4(1, 1, 1, 1));
 
     // Load the duck model and use the lambert shader on it.
-    duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, myphong);
+    duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
 
     // The shader program can also be replaced after the fact.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
@@ -102,16 +113,6 @@ SimpleLightingApp::draw()
     // Enable depth buffering.
     gl::enableDepthWrite();
     gl::enableDepthRead();
-
-	mMaterials[1]->uniform("ciModelViewProjection", camera);
-	mMaterials[1]->uniform("ciModelView",mat4(	1, 0, 0, 0,
-												0, 1, 0, 0,
-												0, 0, 1, 0,
-												0, 0, 0, 1));
-	mMaterials[1]->uniform("ciNormalMatrix", mat4(	0.5f, 0, 0, 0,
-													0, 1, 0, 0,
-													0, -0.02f, 1, 0,
-													0, 0, -0.98f, 1));
 
     // Save current model-view-projection matrix by pushing a new matrix on top.
     gl::pushModelMatrix();

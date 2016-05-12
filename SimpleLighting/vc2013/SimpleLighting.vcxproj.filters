@@ -13,22 +13,22 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Blocks">
-      <UniqueIdentifier>{DD08AD75-EDC1-4610-8421-EDFF6E119FEA}</UniqueIdentifier>
+      <UniqueIdentifier>{B19C8311-0CF7-4C0E-8C2B-E9B416A12565}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\RTR">
-      <UniqueIdentifier>{D738839A-8473-43D6-AAA5-B57F7E88717D}</UniqueIdentifier>
+      <UniqueIdentifier>{848E44B7-6795-44E6-AAF7-8446F48ED1CF}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\RTR\src">
-      <UniqueIdentifier>{EA5E9181-D8FC-4861-B101-9DBD614D5FE3}</UniqueIdentifier>
+      <UniqueIdentifier>{6020FD7F-12BA-44FD-9D41-087D78AE5C00}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\RTR\src\RTR">
-      <UniqueIdentifier>{66F1992F-CE04-4503-BD20-49746536A9AB}</UniqueIdentifier>
+      <UniqueIdentifier>{DBBC2FA5-D783-41FD-A6E2-5FC3B043E971}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\RTR\include">
-      <UniqueIdentifier>{F76D9AAC-6CB7-4AEB-879F-AD45F29727B7}</UniqueIdentifier>
+      <UniqueIdentifier>{6E384FD1-D745-40EB-BE10-192B588BA33F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\RTR\include\RTR">
-      <UniqueIdentifier>{E1BA8958-ECD2-41AF-A54D-BF7569715F4D}</UniqueIdentifier>
+      <UniqueIdentifier>{38F0F5C2-3595-4C81-A4B6-491A608126C6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
