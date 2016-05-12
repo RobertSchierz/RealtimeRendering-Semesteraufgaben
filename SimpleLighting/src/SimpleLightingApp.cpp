@@ -52,8 +52,11 @@ SimpleLightingApp::setup()
     //auto lambert = rtr::watcher.createWatchedProgram(
       //{ getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 
+	/*auto phong = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });*/
+
 	auto phong = rtr::watcher.createWatchedProgram(
-		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });
+	{ getAssetPath("celshading.vert"), getAssetPath("celshading.frag") });
 
 	//mMaterial = rtr::Material::create(phong);
 
@@ -65,7 +68,7 @@ SimpleLightingApp::setup()
 	phong->uniform("shininess", float(10));
 	phong->uniform("ambientLightColor", vec3(0, 0, 0));
 	phong->uniform("lightColor", vec3(1, 1, 1));
-	phong->uniform("lightPositionEC", vec4(1, 1, 1, 1));
+	phong->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
