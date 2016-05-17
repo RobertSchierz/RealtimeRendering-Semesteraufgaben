@@ -15,6 +15,8 @@ uniform vec3  k_diffuse;
 uniform vec3  k_specular;
 uniform float shininess;
 
+uniform float numberOfShades;
+
 // ambient light and point light
 uniform vec3 ambientLightColor;
 uniform vec3 lightColor;
@@ -51,18 +53,30 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     if(ndotl<0.0)
         return vec3(0,0,0); // shadow / facing away from the light source
 
-    if(ndotl < 0) ndotl = 0.2;
-		if(ndotl > 0 && ndotl <= 0.2) c = 0.2;
-		if(ndotl > 0.2 && ndotl <= 0.4) ndotl = 0.4;
-		if(ndotl > 0.4 && ndotl <= 0.5) ndotl = 0.5;
-		if(ndotl > 0.5 && ndotl <= 0.7) ndotl = 0.7;
-		if(ndotl > 0.7 && ndotl <= 0.9) ndotl = 0.9;
-		if(ndotl > 0.9 && ndotl <= 1.1) ndotl = 1.1;
+    //if(ndotl > 0.95)
+    //    ndotl = 1.0;
+    //else if(ndotl > 0.5)
+    //    ndotl = 0.75;
+    //else if(ndotl > 0.25)
+    //    ndotl = 0.5;
+    //else
+    //    ndotl = 0.25;
 
-    //multiplizieren mit 4 dann floor und dividiert durch 4
+    //ndotl = makeShades(ndotl);
+
+
+    //for(float i = 0.0; i < 4.0; i++){
+    //    if(ndotl<shade*i){
+    //        ndotl = i*shade;
+    //    }
+    //}
+    //ndotl = 1.0;
+
+    float shadeFactor = 1.0 / numberOfShades;
 
     // diffuse contribution
-    vec3 diffuse = k_diffuse * lightColor * ndotl;
+    //vec3 diffuse = k_diffuse * lightColor * ndotl
+    vec3 diffuse = k_diffuse * floor(ndotl * numberOfShades) * shadeFactor;
 
     // reflected light direction = perfect reflection direction
     vec3 r = reflect(lightDir,normalDir);
@@ -73,9 +87,22 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     // specular contribution
     vec3 specular = k_specular * lightColor * pow(rdotv, shininess);
 
-    // return sum of all contributions
-    return ambient + diffuse + specular;
+    float specMask = (pow(rdotv, shininess) > 0.4) ? 1 : 0;
 
+    // return sum of all contributions
+    return ambient + diffuse + specular * specMask;
+}
+
+//calculate the shades for cel shading
+float makeShades(float ndotl){
+    float shade = 1.0 / 4.0;
+
+    for(float i = 0.0; i < 4.0; i++){
+        if(ndotl<shade*i){
+            return i*shade;
+        }
+    }
+    return 1.0;
 }
 
 void

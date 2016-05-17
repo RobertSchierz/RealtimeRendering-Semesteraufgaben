@@ -63,12 +63,15 @@ SimpleLightingApp::setup()
 	//float shininess = 100;
 
 	phong->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
-	phong->uniform("k_diffuse", vec3(1, 0, 0));
+	phong->uniform("k_diffuse", vec3(1, 1, 0));
 	phong->uniform("k_specular", vec3(1, 1, 1));
-	phong->uniform("shininess", float(10));
+	phong->uniform("shininess", (float)100);
 	phong->uniform("ambientLightColor", vec3(0, 0, 0));
 	phong->uniform("lightColor", vec3(1, 1, 1));
 	phong->uniform("lightPositionEC", vec4(1, 3, 1, 1));
+
+	//cel shading
+	phong->uniform("numberOfShades", (float)4);
 
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
