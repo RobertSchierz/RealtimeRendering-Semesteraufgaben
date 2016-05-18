@@ -53,25 +53,6 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     if(ndotl<0.0)
         return vec3(0,0,0); // shadow / facing away from the light source
 
-    //if(ndotl > 0.95)
-    //    ndotl = 1.0;
-    //else if(ndotl > 0.5)
-    //    ndotl = 0.75;
-    //else if(ndotl > 0.25)
-    //    ndotl = 0.5;
-    //else
-    //    ndotl = 0.25;
-
-    //ndotl = makeShades(ndotl);
-
-
-    //for(float i = 0.0; i < 4.0; i++){
-    //    if(ndotl<shade*i){
-    //        ndotl = i*shade;
-    //    }
-    //}
-    //ndotl = 1.0;
-
     float shadeFactor = 1.0 / numberOfShades;
 
     // diffuse contribution

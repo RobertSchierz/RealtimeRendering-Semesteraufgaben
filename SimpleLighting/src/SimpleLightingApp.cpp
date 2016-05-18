@@ -37,7 +37,8 @@ class SimpleLightingApp : public App
 	rtr::MaterialRef mMaterial;
 
     // Model of the duck that is displayed.
-    rtr::ModelRef duck;
+    //rtr::ModelRef duck;
+	rtr::ShapeRef mShape;
 };
 
 // Place all one-time setup code here.
@@ -55,12 +56,14 @@ SimpleLightingApp::setup()
 	/*auto phong = rtr::watcher.createWatchedProgram(
 		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });*/
 
-	auto phong = rtr::watcher.createWatchedProgram(
-	{ getAssetPath("celshading.vert"), getAssetPath("celshading.frag") });
+	auto phongProgram = rtr::watcher.createWatchedProgram(
+	{ getAssetPath("circle_shader.vert"), getAssetPath("circle_shader.frag") });
 
 	//mMaterial = rtr::Material::create(phong);
 
 	//float shininess = 100;
+
+	rtr::MaterialRef phong = rtr::Material::create(phongProgram);
 
 	phong->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
 	phong->uniform("k_diffuse", vec3(1, 1, 0));
@@ -73,8 +76,14 @@ SimpleLightingApp::setup()
 	//cel shading
 	phong->uniform("numberOfShades", (float)4);
 
+	phong->uniform("radius", (float)0.4);
+	phong->uniform("density", (float)4);
+	phong->uniform("background", vec3(0.4, 0.4, 0.4));
+
     // Load the duck model and use the lambert shader on it.
-    duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
+    //duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
+	auto t1 = ci::geom::Teapot().subdivisions(80);
+	mShape = rtr::Shape::create({ t1 }, phong);
 
     // The shader program can also be replaced after the fact.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
@@ -127,7 +136,7 @@ SimpleLightingApp::draw()
     gl::rotate(angle, vec3(1, 1, 1));
 
     // Draw the duck model.
-    duck->draw();
+    mShape->draw();
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
