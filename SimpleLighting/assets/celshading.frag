@@ -37,7 +37,7 @@ out vec4 outColor;
 
 
 // calculate Phong-style local illumination
-vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
+vec3 celShading(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 {
 
     // ambient part
@@ -56,7 +56,6 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     float shadeFactor = 1.0 / numberOfShades;
 
     // diffuse contribution
-    //vec3 diffuse = k_diffuse * lightColor * ndotl
     vec3 diffuse = k_diffuse * floor(ndotl * numberOfShades) * shadeFactor;
 
     // reflected light direction = perfect reflection direction
@@ -104,7 +103,7 @@ main(void)
     vec3 viewdirEC = usePerspective? normalize(-vertexPositionEC.xyz) : vec3(0,0,1);
 
     // calculate color using phong illumination
-    vec3 color = phongIllum(normalEC, viewdirEC, lightDirEC);
+    vec3 color = celShading(normalEC, viewdirEC, lightDirEC);
 
     // out to frame buffer
     outColor = vec4(color, 1);

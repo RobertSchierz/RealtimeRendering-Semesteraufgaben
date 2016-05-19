@@ -27,6 +27,8 @@ class SimpleLightingApp : public App
     // Called once for every frame to be rendered.
     void draw() override;
 
+	void keyDown(KeyEvent event) override;
+
   private:
     // Rotation angle used for the animation.
     double angle = 0.0;
@@ -34,11 +36,20 @@ class SimpleLightingApp : public App
     // Tracking time between two draw() calls.
     double lastTime = getElapsedSeconds();
 
-	rtr::MaterialRef mMaterial;
+	rtr::MaterialRef phong;
+	rtr::MaterialRef toon;
+	rtr::MaterialRef circle;
+
+	ci::gl::GlslProgRef phongProgram;
+	ci::gl::GlslProgRef toonProgram;
+	ci::gl::GlslProgRef circleProgram;
 
     // Model of the duck that is displayed.
     //rtr::ModelRef duck;
 	rtr::ShapeRef mShape;
+
+	ci::geom::Teapot teapot;
+	ci::geom::Cube cube;
 };
 
 // Place all one-time setup code here.
@@ -53,17 +64,18 @@ SimpleLightingApp::setup()
     //auto lambert = rtr::watcher.createWatchedProgram(
       //{ getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 
-	/*auto phong = rtr::watcher.createWatchedProgram(
-		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });*/
+	phongProgram = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });
 
-	auto phongProgram = rtr::watcher.createWatchedProgram(
-	{ getAssetPath("circle_shader.vert"), getAssetPath("circle_shader.frag") });
+	/*toonProgram = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("celshading.vert"), getAssetPath("celshading.frag") });*/
 
-	//mMaterial = rtr::Material::create(phong);
+	/*circleProgram = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("circle_shader.vert"), getAssetPath("circle_shader.frag") });*/
 
-	//float shininess = 100;
-
-	rtr::MaterialRef phong = rtr::Material::create(phongProgram);
+	phong = rtr::Material::create(phongProgram);
+	toon = rtr::Material::create(toonProgram);
+	circle = rtr::Material::create(circleProgram);
 
 	phong->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
 	phong->uniform("k_diffuse", vec3(1, 1, 0));
@@ -74,16 +86,23 @@ SimpleLightingApp::setup()
 	phong->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 
 	//cel shading
-	phong->uniform("numberOfShades", (float)4);
+	toon->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
+	toon->uniform("k_diffuse", vec3(1, 1, 0));
+	toon->uniform("k_specular", vec3(1, 1, 1));
+	toon->uniform("shininess", (float)100);
+	toon->uniform("ambientLightColor", vec3(0, 0, 0));
+	toon->uniform("lightColor", vec3(1, 1, 1));
+	toon->uniform("lightPositionEC", vec4(1, 3, 1, 1));
+	toon->uniform("numberOfShades", (float)4);
 
-	phong->uniform("radius", (float)0.4);
-	phong->uniform("density", (float)4);
-	phong->uniform("background", vec3(0.4, 0.4, 0.4));
+	circle->uniform("radius", (float)0.4);
+	circle->uniform("density", (float)4);
+	circle->uniform("background", vec3(0.4, 0.4, 0.4));
 
     // Load the duck model and use the lambert shader on it.
     //duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
-	auto t1 = ci::geom::Teapot().subdivisions(80);
-	mShape = rtr::Shape::create({ t1 }, phong);
+	teapot = ci::geom::Teapot().subdivisions(80);
+	mShape = rtr::Shape::create({ teapot }, toon);
 
     // The shader program can also be replaced after the fact.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
@@ -93,6 +112,24 @@ SimpleLightingApp::setup()
     // Try this version of the duck to see the default shader for OBJ
     // models.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
+}
+
+void
+SimpleLightingApp::keyDown(KeyEvent event)
+{
+	//which key did the user press?
+	auto c = event.getChar();
+	switch (c) {
+	case '1':
+		mShape->replaceMaterial(phong);
+	case '2':
+		mShape->replaceMaterial(toon);
+	case '3':
+		mShape->replaceProgram(circleProgram);
+		mShape->replaceMaterial(circle);
+	default:
+		break;
+	}
 }
 
 // Place all non-OpenGL once-per-frame code here.
@@ -120,7 +157,7 @@ SimpleLightingApp::draw()
 
     // Setup a perspective projection camera.
     CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
-    camera.lookAt(vec3(0, 0, 4), vec3(0, 0, 0));
+    camera.lookAt(vec3(0, 0, 3), vec3(0, 0, 0));
 
     // Push the view-projection matrix to the bottom of the matrix stack.
     gl::setMatrices(camera);
