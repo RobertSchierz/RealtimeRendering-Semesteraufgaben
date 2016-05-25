@@ -39,7 +39,6 @@ out vec4 outColor;
 // calculate Phong-style local illumination
 vec3 celShading(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 {
-
     // ambient part
     vec3 ambient = k_ambient * ambientLightColor;
 
@@ -55,6 +54,12 @@ vec3 celShading(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 
     float shadeFactor = 1.0 / numberOfShades;
 
+    //if(ndotl < 0) ndotl = 0.25;
+      //if(ndotl > 0 && ndotl <= 0.25) ndotl = 0.25;
+      //if(ndotl > 0.25 && ndotl <= 0.5) ndotl = 0.5;
+      //if(ndotl > 0.5 && ndotl <= 0.75) ndotl = 0.75;
+      //if(ndotl > 0.75 && ndotl <= 1.0) ndotl = 1;
+
     // diffuse contribution
     vec3 diffuse = k_diffuse * floor(ndotl * numberOfShades) * shadeFactor;
 
@@ -67,10 +72,14 @@ vec3 celShading(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     // specular contribution
     vec3 specular = k_specular * lightColor * pow(rdotv, shininess);
 
-    float specMask = (pow(rdotv, shininess) > 0.4) ? 1 : 0;
+    if(pow(rdotv, shininess) > 0.01){
+        specular = vec3(1, 1, 1);
+    }
+
+    //float specMask = (pow(rdotv, shininess) > 0.4) ? 1 : 0;
 
     // return sum of all contributions
-    return ambient + diffuse + specular * specMask;
+    return  ambient + diffuse + specular;
 }
 
 //calculate the shades for cel shading

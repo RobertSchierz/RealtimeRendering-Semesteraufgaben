@@ -6,7 +6,7 @@
  * and model-view, projection and normal matrices.
  *
  * It transforms the position and normal to eye coordinates and
- * passes them to the fragment shader; it also transforms the vertex 
+ * passes them to the fragment shader; it also transforms the vertex
  * position to clip coordinates for the needs of the pipeline.
  *
  */
@@ -27,14 +27,14 @@ out vec4 vertexPositionEC;
 out vec3 normalDirEC;
 
 void main(void) {
-    
+
     // position to clip coordinates
     gl_Position = ciModelViewProjection * ciPosition;
-    
+
     // position to eye coordinates
     vertexPositionEC = ciModelView * ciPosition;
-    
+
     // normal to eye coordinates
     normalDirEC = ciNormalMatrix * ciNormal;
-    
+
 }

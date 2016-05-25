@@ -35,7 +35,7 @@ in vec3 normalDirEC;
 // output: color
 out vec4 outColor;
 
-precision highp float;
+//precision highp float;
 
 uniform vec3 color;
 uniform vec3 lightIntensity;
@@ -72,30 +72,34 @@ vec3 toon(vec3 normalDir, vec3 viewDir, vec3 lightDir, vec3 color) {
     // specular contribution
     vec3 specular = k_specular * lightColor * pow(rdotv, shininess);
 
-    float specMask = (pow(rdotv, shininess) > 0.4) ? 1 : 0;
+    //float specMask = (pow(rdotv, shininess) > 0.4) ? 1 : 0;
+
+    if(pow(rdotv, shininess) > 0.01){
+        specular = vec3(1, 1, 1);
+    }
 
     // return sum of all contributions
-    return color + ambient + diffuse + specular * specMask;
+    return color + ambient + diffuse + specular;
 }
 
 vec3 getColor() {
-            vec2 middle = vec2(0.5, 0.5);
-            middle = middle / density;
+    vec2 middle = vec2(0.5, 0.5);
+    middle = middle / density;
 
-            float localRadius = radius / density;
-            float x1_y1 = 1.0 / density;
+    float localRadius = radius / density;
+    float x1_y1 = 1.0 / density;
 
-            middle = vec2(
-                    float(int(texCoord.x/x1_y1)) * x1_y1 + middle.x,
-                    float(int(texCoord.y/x1_y1)) * x1_y1 + middle.y
-            );
+    middle = vec2(
+            float(int(texCoord.x/x1_y1)) * x1_y1 + middle.x,
+            float(int(texCoord.y/x1_y1)) * x1_y1 + middle.y
+    );
 
-            if (distance(texCoord, middle) < localRadius) {
-                return color;
-            } else {
-                return background;
-            }
-        }
+    if (distance(texCoord, middle) < localRadius) {
+        return color;
+    } else {
+        return background;
+    }
+}
 
 void main() {
     // normalize normal after projection

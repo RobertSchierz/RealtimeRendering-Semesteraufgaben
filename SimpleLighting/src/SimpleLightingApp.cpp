@@ -39,10 +39,12 @@ class SimpleLightingApp : public App
 	rtr::MaterialRef phong;
 	rtr::MaterialRef toon;
 	rtr::MaterialRef circle;
+	rtr::MaterialRef rect;
 
 	ci::gl::GlslProgRef phongProgram;
 	ci::gl::GlslProgRef toonProgram;
 	ci::gl::GlslProgRef circleProgram;
+	ci::gl::GlslProgRef rectProgram;
 
     // Model of the duck that is displayed.
     //rtr::ModelRef duck;
@@ -50,15 +52,21 @@ class SimpleLightingApp : public App
 
 	ci::geom::Teapot teapot;
 	ci::geom::Cube cube;
+
+	std::vector<rtr::ShapeRef> mShapes;
+	int shapeIndex;
+	float checkerboard;
 };
 
 // Place all one-time setup code here.
 void
 SimpleLightingApp::setup()
 {
+	shapeIndex = 0;
+	checkerboard = 2.0;
     // Arange for the window to always be on top. This helps with live shader
     // coding
-    getWindow()->setAlwaysOnTop();
+    //getWindow()->setAlwaysOnTop();
 
     // Create a live-reloading shader program.
     //auto lambert = rtr::watcher.createWatchedProgram(
@@ -67,15 +75,19 @@ SimpleLightingApp::setup()
 	phongProgram = rtr::watcher.createWatchedProgram(
 		{ getAssetPath("myphong.vert"), getAssetPath("myphong.frag") });
 
-	/*toonProgram = rtr::watcher.createWatchedProgram(
-		{ getAssetPath("celshading.vert"), getAssetPath("celshading.frag") });*/
+	toonProgram = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("celshading.vert"), getAssetPath("celshading.frag") });
 
-	/*circleProgram = rtr::watcher.createWatchedProgram(
-		{ getAssetPath("circle_shader.vert"), getAssetPath("circle_shader.frag") });*/
+	circleProgram = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("circle_shader.vert"), getAssetPath("circle_shader.frag") });
+
+	rectProgram = rtr::watcher.createWatchedProgram(
+		{ getAssetPath("rect_shader.vert"), getAssetPath("rect_shader.frag") });
 
 	phong = rtr::Material::create(phongProgram);
 	toon = rtr::Material::create(toonProgram);
 	circle = rtr::Material::create(circleProgram);
+	rect = rtr::Material::create(rectProgram);
 
 	phong->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
 	phong->uniform("k_diffuse", vec3(1, 1, 0));
@@ -95,40 +107,58 @@ SimpleLightingApp::setup()
 	toon->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 	toon->uniform("numberOfShades", (float)4);
 
+	circle->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
+	circle->uniform("k_diffuse", vec3(1, 1, 0));
+	circle->uniform("k_specular", vec3(1, 1, 1));
+	circle->uniform("shininess", (float)100);
+	circle->uniform("ambientLightColor", vec3(0, 0, 0));
+	circle->uniform("lightColor", vec3(1, 1, 1));
+	circle->uniform("lightPositionEC", vec4(1, 3, 1, 1));
+	circle->uniform("numberOfShades", (float)4);
 	circle->uniform("radius", (float)0.4);
-	circle->uniform("density", (float)4);
+	circle->uniform("density", (float)6);
 	circle->uniform("background", vec3(0.4, 0.4, 0.4));
 
-    // Load the duck model and use the lambert shader on it.
+	rect->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
+	rect->uniform("k_diffuse", vec3(1, 1, 0));
+	rect->uniform("k_specular", vec3(1, 1, 1));
+	rect->uniform("shininess", (float)100);
+	rect->uniform("ambientLightColor", vec3(0, 0, 0));
+	rect->uniform("lightColor", vec3(1, 1, 1));
+	rect->uniform("lightPositionEC", vec4(1, 3, 1, 1));
+	rect->uniform("numberOfShades", (float)4);
+	rect->uniform("radius", (float)0.4);
+	rect->uniform("density", (float)4);
+	rect->uniform("background", vec3(0.4, 0.4, 0.4));
+	rect->uniform("checkerboard", 2);
+
     //duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, phong);
 	teapot = ci::geom::Teapot().subdivisions(80);
-	mShape = rtr::Shape::create({ teapot }, toon);
+	mShapes.push_back(rtr::Shape::create({ teapot }, phong));
 
-    // The shader program can also be replaced after the fact.
-    // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
-    // for (auto& shape : duck->shapes)
-    //     shape->replaceProgram(lambert);
+	mShapes.push_back(rtr::Shape::create({ teapot }, toon));
 
-    // Try this version of the duck to see the default shader for OBJ
-    // models.
-    // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
+	cube = ci::geom::Cube().subdivisions(1);
+	mShapes.push_back(rtr::Shape::create({ cube }, circle));
+	mShapes.push_back(rtr::Shape::create({ teapot }, rect));
 }
 
 void
 SimpleLightingApp::keyDown(KeyEvent event)
 {
-	//which key did the user press?
-	auto c = event.getChar();
-	switch (c) {
-	case '1':
-		mShape->replaceMaterial(phong);
-	case '2':
-		mShape->replaceMaterial(toon);
-	case '3':
-		mShape->replaceProgram(circleProgram);
-		mShape->replaceMaterial(circle);
-	default:
-		break;
+	//which key did the user press? 
+	int c = event.getCode();
+	if (c == KeyEvent::KEY_1){
+		shapeIndex = 0;
+	}
+	if (c == KeyEvent::KEY_2){
+		shapeIndex = 1;
+	}
+	if (c == KeyEvent::KEY_3){
+		shapeIndex = 2;
+	}
+	if (c == KeyEvent::KEY_4){
+		shapeIndex = 3;
 	}
 }
 
@@ -143,6 +173,14 @@ SimpleLightingApp::update()
 
     // Animate the rotation angle.
     angle += (M_PI / 10) * elapsed;
+
+	float max = 60.0;
+
+	if (checkerboard <= max){
+		checkerboard += 0.02;
+	}else{
+		checkerboard = 2.0;
+	}
 
     // Check now whether any files changed.
     rtr::watcher.checkForChanges();
@@ -172,8 +210,10 @@ SimpleLightingApp::draw()
     // Apply the rotation around the diagonal unit axis.
     gl::rotate(angle, vec3(1, 1, 1));
 
+	rect->uniform("checkerboard", checkerboard);
+
     // Draw the duck model.
-    mShape->draw();
+    mShapes[shapeIndex]->draw();
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
