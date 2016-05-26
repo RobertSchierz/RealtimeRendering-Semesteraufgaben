@@ -63,6 +63,8 @@ vec3 celShading(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     // diffuse contribution
     vec3 diffuse = k_diffuse * floor(ndotl * numberOfShades) * shadeFactor;
 
+    //vec3 diffuse = k_diffuse * floor(acos(ndotl) * numberOfShades) * shadeFactor;
+
     // reflected light direction = perfect reflection direction
     vec3 r = reflect(lightDir,normalDir);
 

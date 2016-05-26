@@ -90,8 +90,8 @@ vec3 getColor() {
     float x1_y1 = 1.0 / density;
 
     middle = vec2(
-            float(int(texCoord.x/x1_y1)) * x1_y1 + middle.x,
-            float(int(texCoord.y/x1_y1)) * x1_y1 + middle.y
+            float(floor(texCoord.x/x1_y1)) * x1_y1 + middle.x,
+            float(floor(texCoord.y/x1_y1)) * x1_y1 + middle.y
     );
 
     if (distance(texCoord, middle) < localRadius) {

@@ -79,10 +79,10 @@ vec3 toon(vec3 normalDir, vec3 viewDir, vec3 lightDir, vec3 color) {
     return color + ambient + diffuse + specular;
 }
 
-vec3 getColor() {
-    float fmodResult = mod(floor(checkerboard * texCoord.x) + floor(checkerboard * texCoord.y), 2.0);
+vec3 calcRects() {
+    float modulo = mod(floor(checkerboard * texCoord.x) + floor(checkerboard * texCoord.y), 2.0);
 
-    if (fmodResult < 1.0) {
+    if (modulo < 1.0) {
         return color;
     } else {
         return background;
@@ -105,7 +105,7 @@ void main() {
     vec3 viewdirEC = usePerspective? normalize(-vertexPositionEC.xyz) : vec3(0,0,1);
 
     // calculate color using phong illumination
-    vec3 color = toon(normalEC, viewdirEC, lightDirEC, getColor());
+    vec3 color = toon(normalEC, viewdirEC, lightDirEC, calcRects());
 
     // out to frame buffer
     outColor = vec4(color, 1);
