@@ -34,16 +34,17 @@ class TerrainFlyOverApp : public App
 
     // Model of the duck that is displayed.
 
-	rtr::MaterialRef lambert;
+	rtr::MaterialRef bumpmap;
 
-	ci::gl::GlslProgRef lambertProgram;
+	ci::gl::GlslProgRef bumpmapProgram;
 
 	ci::geom::Plane plane;
 
-	gl::Texture2dRef mTex;
+	gl::Texture2dRef mNormalMap;
+	gl::Texture2dRef mHeightMap;
 
-	gl::TextureRef mTexture;
-	ci::gl::GlslProgRef	mGlsl;
+	//gl::TextureBaseRef mNormalMapture;
+	//ci::gl::GlslProgRef	mGlsl;
 
 	std::vector<rtr::ShapeRef> mShapes;
 	int shapeIndex;
@@ -58,25 +59,36 @@ TerrainFlyOverApp::setup()
     // coding
     //getWindow()->setAlwaysOnTop();
 
+	auto normalMapImg = loadImage(loadAsset("Rock_01_local.jpg"));
+	mNormalMap = gl::Texture2d::create(normalMapImg);
+
+	auto heightMapImg = loadImage(loadAsset("Rock_01_h.jpg"));
+	mHeightMap = gl::Texture2d::create(heightMapImg);
+
     // Create a live-reloading shader program.
-	lambertProgram = rtr::watcher.createWatchedProgram(
-      { getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
+	bumpmapProgram = rtr::watcher.createWatchedProgram(
+      { getAssetPath("bumpmaping.vert"), getAssetPath("bumpmaping.frag") });
 
-	lambert = rtr::Material::create(lambertProgram);
+	bumpmap = rtr::Material::create(bumpmapProgram);
 
-	lambert->uniform("texNormal", 1);
+	bumpmap->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
+	bumpmap->uniform("k_diffuse", vec3(1, 1, 0));
+	bumpmap->uniform("k_specular", vec3(1, 1, 1));
+	bumpmap->uniform("shininess", (float)100);
+	bumpmap->uniform("ambientLightColor", vec3(0, 0, 0));
+	bumpmap->uniform("lightColor", vec3(1, 1, 1));
+	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
+	bumpmap->texture("normalMap", mNormalMap);
+	bumpmap->texture("heightMap", mHeightMap);
 
-	auto img = loadImage(loadAsset("Rock_01_local.jpg"));
-	mTex = gl::Texture2d::create(img);
-
-	mTex->bind();
+	//mNormalMap->bind();
 	
 	plane = ci::geom::Plane();
 	
-	//auto shader = gl::ShaderDef().texture().lambert();
+	//auto shader = gl::ShaderDef().texture().bumpmap();
 	//mGlsl = gl::getStockShader(shader);
 	//auto sphere = geom::Sphere().subdivisions(50);
-	mShapes.push_back(rtr::Shape::create({ plane }, lambert));
+	mShapes.push_back(rtr::Shape::create({ plane }, bumpmap));
 }
 
 // Place all non-OpenGL once-per-frame code here.
@@ -104,7 +116,7 @@ TerrainFlyOverApp::draw()
 
     // Setup a perspective projection camera.
     CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
-    camera.lookAt(vec3(0, 0, 3), vec3(0, 0, 0));
+    camera.lookAt(vec3(0, 3, 2), vec3(0, 0, 0));
 
     // Push the view-projection matrix to the bottom of the matrix stack.
     gl::setMatrices(camera);
@@ -124,7 +136,7 @@ TerrainFlyOverApp::draw()
 
 	//mSphere->draw();
 
-	//gl::draw(mTex);
+	//gl::draw(mNormalMap);
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();

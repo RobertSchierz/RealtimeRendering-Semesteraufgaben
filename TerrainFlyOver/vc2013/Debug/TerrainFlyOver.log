@@ -1,10 +1,6 @@
-﻿Der Buildvorgang wurde am 26.05.2016 16:49:47 gestartet.
+﻿Der Buildvorgang wurde am 01.06.2016 00:07:54 gestartet.
      1>Projekt "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" auf Knoten "2", Build Ziel(e).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /I..\..\..\cinder_0.9.0_vc2013\include /I..\blocks\RTR\include /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _WIN32_WINNT=0x0601 /D _WINDOWS /D NOMINMAX /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\TerrainFlyOverApp.cpp
-         TerrainFlyOverApp.cpp
-     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\terrainflyoverapp.cpp(119): warning C4244: 'Argument': Konvertierung von 'double' in 'float', möglicher Datenverlust
-       Link:
+     1>Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\..\..\cinder_0.9.0_vc2013\lib\msw\x86 "cinder-v120_d.lib" OpenGL32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.lib" /MACHINE:X86 Debug\Resources.res
          Debug\TerrainFlyOverApp.obj
          Debug\Material.obj
@@ -12,9 +8,10 @@
          Debug\SceneGraph.obj
          Debug\WatchThis.obj
          Debug\tiny_obj_loader.obj
+         LINK : C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe wurde nicht gefunden oder beim letzten inkrementellen Linkvorgang nicht erstellt; vollständiger Link wird durchgeführt.
          TerrainFlyOver.vcxproj -> C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe
      1>Die Erstellung des Projekts "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" ist abgeschlossen, Build Ziel(e).
 
 Build erfolgreich.
 
-Verstrichene Zeit 00:00:13.69
+Verstrichene Zeit 00:00:04.39
