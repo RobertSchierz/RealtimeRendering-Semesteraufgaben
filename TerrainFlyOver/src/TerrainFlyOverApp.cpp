@@ -72,9 +72,9 @@ TerrainFlyOverApp::setup()
 	bumpmap = rtr::Material::create(bumpmapProgram);
 
 	bumpmap->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
-	bumpmap->uniform("k_diffuse", vec3(1, 1, 0));
+	bumpmap->uniform("k_diffuse", vec3(0.54, 0.27, 0.07));
 	bumpmap->uniform("k_specular", vec3(1, 1, 1));
-	bumpmap->uniform("shininess", (float)100);
+	bumpmap->uniform("shininess", (float)200);
 	bumpmap->uniform("ambientLightColor", vec3(0, 0, 0));
 	bumpmap->uniform("lightColor", vec3(1, 1, 1));
 	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
@@ -83,7 +83,7 @@ TerrainFlyOverApp::setup()
 
 	//mNormalMap->bind();
 	
-	plane = ci::geom::Plane();
+	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000));
 	
 	//auto shader = gl::ShaderDef().texture().bumpmap();
 	//mGlsl = gl::getStockShader(shader);
@@ -116,7 +116,7 @@ TerrainFlyOverApp::draw()
 
     // Setup a perspective projection camera.
     CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
-    camera.lookAt(vec3(0, 3, 2), vec3(0, 0, 0));
+    camera.lookAt(vec3(0, 0.6, 1.5), vec3(0, 0, 0));
 
     // Push the view-projection matrix to the bottom of the matrix stack.
     gl::setMatrices(camera);

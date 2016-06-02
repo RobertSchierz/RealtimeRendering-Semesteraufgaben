@@ -18,6 +18,8 @@ uniform mat4 ciModelViewProjection;
 uniform mat4 ciModelView;
 uniform mat3 ciNormalMatrix;
 
+uniform sampler2D heightMap;
+
 // position and normal vectors
 in vec4 ciPosition;
 in vec3 ciNormal;
@@ -32,8 +34,11 @@ out vec2 TexCoord;
 
 void main(void) {
 
+    float height = texture(heightMap, ciTexCoord0).r * 0.05;
+    vec4 pos = ciPosition + vec4(ciNormal, 0) * height;
+
     // position to clip coordinates
-    gl_Position = ciModelViewProjection * ciPosition;
+    gl_Position = ciModelViewProjection * pos;
 
     // position to eye coordinates
     vertexPositionEC = ciModelView * ciPosition;
