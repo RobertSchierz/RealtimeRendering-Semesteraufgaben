@@ -25,6 +25,10 @@ class TerrainFlyOverApp : public App
     // Called once for every frame to be rendered.
     void draw() override;
 
+	void keyDown(KeyEvent event) override;
+
+	void keyUp(KeyEvent event) override;
+
   private:
     // Rotation angle used for the animation.
     double angle = 0.0;
@@ -48,6 +52,9 @@ class TerrainFlyOverApp : public App
 
 	std::vector<rtr::ShapeRef> mShapes;
 	int shapeIndex;
+
+	bool mIsMovingForward = false;
+	float zMov = 1.5;
 };
 
 // Place all one-time setup code here.
@@ -96,7 +103,7 @@ void
 TerrainFlyOverApp::update()
 {
     // Calculate elapsed time since last frame.
-    double now = getElapsedSeconds();
+	double now = getElapsedSeconds();
     double elapsed = now - lastTime;
     lastTime = now;
 
@@ -111,12 +118,18 @@ TerrainFlyOverApp::update()
 void
 TerrainFlyOverApp::draw()
 {
+	//node navigator klasse programmieren
+
     // Clear background to gray.
     gl::clear(Color(0.5, 0.5, 0.5));
 
     // Setup a perspective projection camera.
     CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
-    camera.lookAt(vec3(0, 0.6, 1.5), vec3(0, 0, 0));
+    camera.lookAt(vec3(0, 0.6, zMov), vec3(0, 0, 0));
+
+	if (mIsMovingForward){
+		zMov -= 0.01;
+	}
 
     // Push the view-projection matrix to the bottom of the matrix stack.
     gl::setMatrices(camera);
@@ -141,6 +154,21 @@ TerrainFlyOverApp::draw()
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
 }
+
+
+void TerrainFlyOverApp::keyDown(KeyEvent event) {
+	int e = event.getCode();
+	if (e == KeyEvent::KEY_w){
+		mIsMovingForward = true;
+	}
+}
+void TerrainFlyOverApp::keyUp(KeyEvent event) {
+	int e = event.getCode();
+	if (e == KeyEvent::KEY_w){
+		mIsMovingForward = false;
+	}
+}
+
 
 void
 prepareSettings(TerrainFlyOverApp::Settings* settings)
