@@ -8,9 +8,12 @@
 
 #include "RTR/RTR.h"
 
+#include "NodeNavigator.hpp"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+using namespace rtr;
 
 // App template for the Real Time Rendering course, inherits from Cinder App.
 class TerrainFlyOverApp : public App
@@ -25,11 +28,19 @@ class TerrainFlyOverApp : public App
     // Called once for every frame to be rendered.
     void draw() override;
 
-	void keyDown(KeyEvent event) override;
-
-	void keyUp(KeyEvent event) override;
+	// cursor keys steer light navigation (with or without Ctrl/Cmd key)
+	void keyDown(KeyEvent event) override {
+		cameraNav_.keyDown(event);
+	}
+	void keyUp(KeyEvent event) override {
+		// not relevant here
+	}
 
   private:
+
+	AbsolutePositionNavigator cameraNav_;
+	NodeRef root_, scene_, camera_, model_;
+
     // Rotation angle used for the animation.
     double angle = 0.0;
 
@@ -41,8 +52,6 @@ class TerrainFlyOverApp : public App
 	rtr::MaterialRef bumpmap;
 
 	ci::gl::GlslProgRef bumpmapProgram;
-
-	ci::geom::Plane plane;
 
 	gl::Texture2dRef mNormalMap;
 	gl::Texture2dRef mHeightMap;
@@ -62,9 +71,9 @@ void
 TerrainFlyOverApp::setup()
 {
 	shapeIndex = 0;
-    // Arange for the window to always be on top. This helps with live shader
-    // coding
-    //getWindow()->setAlwaysOnTop();
+	// Arange for the window to always be on top. This helps with live shader
+	// coding
+	//getWindow()->setAlwaysOnTop();
 
 	auto normalMapImg = loadImage(loadAsset("Rock_01_local.jpg"));
 	mNormalMap = gl::Texture2d::create(normalMapImg);
@@ -72,9 +81,9 @@ TerrainFlyOverApp::setup()
 	auto heightMapImg = loadImage(loadAsset("Rock_01_h.jpg"));
 	mHeightMap = gl::Texture2d::create(heightMapImg);
 
-    // Create a live-reloading shader program.
+	// Create a live-reloading shader program.
 	bumpmapProgram = rtr::watcher.createWatchedProgram(
-      { getAssetPath("bumpmaping.vert"), getAssetPath("bumpmaping.frag") });
+	{ getAssetPath("bumpmaping.vert"), getAssetPath("bumpmaping.frag") });
 
 	bumpmap = rtr::Material::create(bumpmapProgram);
 
@@ -88,14 +97,23 @@ TerrainFlyOverApp::setup()
 	bumpmap->texture("normalMap", mNormalMap);
 	bumpmap->texture("heightMap", mHeightMap);
 
-	//mNormalMap->bind();
-	
-	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000));
+
+	auto planeShape = Shape::create({ geom::Plane().subdivisions(vec2(1000, 1000)) }, bumpmap);
+	auto planeModel = Model::create({ planeShape });
+
+	model_ = Node::create({ planeModel }, mat4());
+	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
+
+	// additional "container scene" including camera
+	camera_ = Node::create({}, translate(vec3(0, 0, 4)));
+	root_ = Node::create({}, mat4(), { scene_, camera_ });
+
+	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
 	
 	//auto shader = gl::ShaderDef().texture().bumpmap();
 	//mGlsl = gl::getStockShader(shader);
 	//auto sphere = geom::Sphere().subdivisions(50);
-	mShapes.push_back(rtr::Shape::create({ plane }, bumpmap));
+	//mShapes.push_back(rtr::Shape::create({ plane }, bumpmap));
 }
 
 // Place all non-OpenGL once-per-frame code here.
@@ -124,15 +142,18 @@ TerrainFlyOverApp::draw()
     gl::clear(Color(0.5, 0.5, 0.5));
 
     // Setup a perspective projection camera.
-    CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
-    camera.lookAt(vec3(0, 0.6, zMov), vec3(0, 0, 0));
+    //CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
+    //camera.lookAt(vec3(0, 0.6, zMov), vec3(0, 0, 0));
+
+	// push the projection matrix to the bottom of the matrix stack
+	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
+	gl::setMatrices(camera);
+	mat4 toView = inverse(cameraNav_.toWorld());
+	gl::setViewMatrix(toView);
 
 	if (mIsMovingForward){
 		zMov -= 0.01;
 	}
-
-    // Push the view-projection matrix to the bottom of the matrix stack.
-    gl::setMatrices(camera);
 
     // Enable depth buffering.
     gl::enableDepthWrite();
@@ -145,7 +166,9 @@ TerrainFlyOverApp::draw()
     gl::rotate(angle, vec3(1, 1, 1));
 
     // Draw the duck model.
-    mShapes[shapeIndex]->draw();
+    //mShapes[shapeIndex]->draw();
+
+	scene_->draw();
 
 	//mSphere->draw();
 
@@ -153,20 +176,6 @@ TerrainFlyOverApp::draw()
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
-}
-
-
-void TerrainFlyOverApp::keyDown(KeyEvent event) {
-	int e = event.getCode();
-	if (e == KeyEvent::KEY_w){
-		mIsMovingForward = true;
-	}
-}
-void TerrainFlyOverApp::keyUp(KeyEvent event) {
-	int e = event.getCode();
-	if (e == KeyEvent::KEY_w){
-		mIsMovingForward = false;
-	}
 }
 
 

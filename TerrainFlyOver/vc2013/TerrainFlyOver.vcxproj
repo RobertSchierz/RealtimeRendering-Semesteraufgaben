@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -106,7 +107,6 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\blocks\RTR\include\RTR\Material.hpp" />
@@ -117,14 +117,16 @@
     <ClInclude Include="..\blocks\RTR\include\RTR\RTR.h" />
     <ClInclude Include="..\blocks\RTR\include\RTR\tiny_obj_loader.h" />
     <ClInclude Include="..\blocks\RTR\include\RTR\RTR.h" />
+    <ClInclude Include="..\src\NodeNavigator.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TerrainFlyOverApp.cpp" />
+    <ClCompile Include="..\src\NodeNavigator.cpp" />
     <ClCompile Include="..\blocks\RTR\src\RTR\Material.cpp" />
     <ClCompile Include="..\blocks\RTR\src\RTR\ObjLoader.cpp" />
     <ClCompile Include="..\blocks\RTR\src\RTR\SceneGraph.cpp" />
     <ClCompile Include="..\blocks\RTR\src\RTR\WatchThis.cpp" />
     <ClCompile Include="..\blocks\RTR\src\RTR\tiny_obj_loader.cc" />
+    <ClCompile Include="..\src\TerrainFlyOverApp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

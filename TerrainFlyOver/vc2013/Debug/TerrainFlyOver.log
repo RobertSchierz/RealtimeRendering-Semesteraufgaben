@@ -1,21 +1,40 @@
-﻿Der Buildvorgang wurde am 05.06.2016 20:08:57 gestartet.
-     1>Projekt "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" auf Knoten "2", Build Ziel(e).
+﻿Der Buildvorgang wurde am 08.06.2016 00:20:12 gestartet.
+     1>Projekt "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" auf Knoten "2", Rebuild Ziel(e).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /I..\..\..\cinder_0.9.0_vc2013\include /I..\blocks\RTR\include /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _WIN32_WINNT=0x0601 /D _WINDOWS /D NOMINMAX /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\TerrainFlyOverApp.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /I..\..\..\cinder_0.9.0_vc2013\include /I..\blocks\RTR\include /ZI /nologo /W3 /WX- /MP /Od /Oy- /D WIN32 /D _WIN32_WINNT=0x0601 /D _WINDOWS /D NOMINMAX /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\NodeNavigator.cpp ..\blocks\RTR\src\RTR\Material.cpp ..\blocks\RTR\src\RTR\ObjLoader.cpp ..\blocks\RTR\src\RTR\SceneGraph.cpp ..\blocks\RTR\src\RTR\WatchThis.cpp ..\blocks\RTR\src\RTR\tiny_obj_loader.cc ..\src\TerrainFlyOverApp.cpp
+     1>cl : Befehlszeile warning D9030: "/Gm" ist mit Multiprocessing inkompatibel. Der Schalter "/MP" wird ignoriert.
          TerrainFlyOverApp.cpp
-     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\terrainflyoverapp.cpp(131): warning C4305: '-=': Verkürzung von 'double' in 'float'
-     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\terrainflyoverapp.cpp(145): warning C4244: 'Argument': Konvertierung von 'double' in 'float', möglicher Datenverlust
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\nodenavigator.hpp(48): warning C4305: 'Initialisierung': Verkürzung von 'double' in 'float'
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\terrainflyoverapp.cpp(155): warning C4305: '-=': Verkürzung von 'double' in 'float'
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\terrainflyoverapp.cpp(166): warning C4244: 'Argument': Konvertierung von 'double' in 'float', möglicher Datenverlust
+         tiny_obj_loader.cc
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\blocks\rtr\include\rtr\tiny_obj_loader.h(1089): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304): Siehe Deklaration von 'sscanf'
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\blocks\rtr\include\rtr\tiny_obj_loader.h(1113): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(304): Siehe Deklaration von 'sscanf'
+         WatchThis.cpp
+         SceneGraph.cpp
+         ObjLoader.cpp
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\blocks\rtr\src\rtr\objloader.cpp(74): warning C4018: '<': Konflikt zwischen 'signed' und 'unsigned'
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\blocks\rtr\src\rtr\objloader.cpp(88): warning C4018: '<': Konflikt zwischen 'signed' und 'unsigned'
+         Material.cpp
+         NodeNavigator.cpp
+     1>c:\users\jan\documents\uni\real-time-rendering\rtr-jan_a\terrainflyover\src\nodenavigator.hpp(48): warning C4305: 'Initialisierung': Verkürzung von 'double' in 'float'
+         Code wird generiert...
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /I..\..\..\cinder_0.9.0_vc2013\include /I..\include /nologo /fo"Debug\Resources.res" Resources.rc 
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\..\..\cinder_0.9.0_vc2013\lib\msw\x86 "cinder-v120_d.lib" OpenGL32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.lib" /MACHINE:X86 Debug\Resources.res
-         Debug\TerrainFlyOverApp.obj
+         Debug\NodeNavigator.obj
          Debug\Material.obj
          Debug\ObjLoader.obj
          Debug\SceneGraph.obj
          Debug\WatchThis.obj
          Debug\tiny_obj_loader.obj
+         Debug\TerrainFlyOverApp.obj
          TerrainFlyOver.vcxproj -> C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe
-     1>Die Erstellung des Projekts "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" ist abgeschlossen, Build Ziel(e).
+     1>Die Erstellung des Projekts "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" ist abgeschlossen, Rebuild Ziel(e).
 
 Build erfolgreich.
 
-Verstrichene Zeit 00:00:12.17
+Verstrichene Zeit 00:00:17.19
