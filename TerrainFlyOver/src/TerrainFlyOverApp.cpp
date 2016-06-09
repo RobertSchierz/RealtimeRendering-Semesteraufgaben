@@ -8,6 +8,8 @@
 
 #include "RTR/RTR.h"
 
+#include "NodeNavigator.hpp"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -26,13 +28,19 @@ class TerrainFlyOverApp : public App
     // Called once for every frame to be rendered.
     void draw() override;
 
-	void keyDown(KeyEvent event) override;
+	void keyDown(KeyEvent event) override {
+		cameraNav_.keyDown(event);
+	}
 
-	void keyUp(KeyEvent event) override;
+	void keyUp(KeyEvent event) override {
+		// not relevant here
+	}
 
   private:
 
 	NodeRef camera_, root_, scene_, model_;
+
+	AbsolutePositionNavigator cameraNav_;
 
     // Rotation angle used for the animation.
     double angle = 0.0;
@@ -102,6 +110,8 @@ TerrainFlyOverApp::setup()
 	camera_ = Node::create({}, translate(vec3(0, 0, 4)));
 	root_ = Node::create({}, mat4(), { scene_, camera_ });
 
+	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
+
 	//auto shader = gl::ShaderDef().texture().bumpmap();
 	//mGlsl = gl::getStockShader(shader);
 	//auto sphere = geom::Sphere().subdivisions(50);
@@ -136,7 +146,8 @@ TerrainFlyOverApp::draw()
     // Setup a perspective projection camera.
     CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
 	gl::setMatrices(camera);
-	mat4 toView = inverse(root_->find(camera_)[0].transform);
+	//mat4 toView = inverse(root_->find(camera_)[0].transform);
+	mat4 toView = inverse(cameraNav_.toWorld());
 	gl::setViewMatrix(toView);
 
     //camera.lookAt(vec3(0, 0.6, zMov), vec3(0, 0, 0));
@@ -172,18 +183,18 @@ TerrainFlyOverApp::draw()
 }
 
 
-void TerrainFlyOverApp::keyDown(KeyEvent event) {
-	int e = event.getCode();
-	if (e == KeyEvent::KEY_w){
-		mIsMovingForward = true;
-	}
-}
-void TerrainFlyOverApp::keyUp(KeyEvent event) {
-	int e = event.getCode();
-	if (e == KeyEvent::KEY_w){
-		mIsMovingForward = false;
-	}
-}
+//void TerrainFlyOverApp::keyDown(KeyEvent event) {
+//	int e = event.getCode();
+//	if (e == KeyEvent::KEY_w){
+//		mIsMovingForward = true;
+//	}
+//}
+//void TerrainFlyOverApp::keyUp(KeyEvent event) {
+//	int e = event.getCode();
+//	if (e == KeyEvent::KEY_w){
+//		mIsMovingForward = false;
+//	}
+//}
 
 
 void
