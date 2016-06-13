@@ -45,6 +45,10 @@ class TerrainFlyOverApp : public App
     // Rotation angle used for the animation.
     double angle = 0.0;
 
+	float speed = 0.0;
+	float maxSpeed = 0.1;
+	float acceleration = 0.0001;
+
     // Tracking time between two draw() calls.
     double lastTime = getElapsedSeconds();
 
@@ -99,8 +103,6 @@ TerrainFlyOverApp::setup()
 	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 	bumpmap->texture("normalMap", mNormalMap);
 	bumpmap->texture("heightMap", mHeightMap);
-
-	//mNormalMap->bind();
 	
 	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000));
 
@@ -111,11 +113,6 @@ TerrainFlyOverApp::setup()
 	root_ = Node::create({}, mat4(), { scene_, camera_ });
 
 	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
-
-	//auto shader = gl::ShaderDef().texture().bumpmap();
-	//mGlsl = gl::getStockShader(shader);
-	//auto sphere = geom::Sphere().subdivisions(50);
-	//mShapes.push_back(rtr::Shape::create({ plane }, bumpmap));
 }
 
 // Place all non-OpenGL once-per-frame code here.
@@ -127,8 +124,14 @@ TerrainFlyOverApp::update()
     double elapsed = now - lastTime;
     lastTime = now;
 
-    // Animate the rotation angle.
+	// Animate the rotation angle.
     angle += (M_PI / 10) * elapsed;
+
+	if (speed < maxSpeed) 
+		cameraNav_.setSpeed(speed += acceleration);
+	else if (speed > maxSpeed) 
+		cameraNav_.setSpeed(maxSpeed);
+	
 
     // Check now whether any files changed.
     rtr::watcher.checkForChanges();
@@ -150,12 +153,6 @@ TerrainFlyOverApp::draw()
 	mat4 toView = inverse(cameraNav_.toWorld());
 	gl::setViewMatrix(toView);
 
-    //camera.lookAt(vec3(0, 0.6, zMov), vec3(0, 0, 0));
-
-	if (mIsMovingForward){
-		zMov -= 0.01;
-	}
-
     // Push the view-projection matrix to the bottom of the matrix stack.
     //gl::setMatrices(camera);
 
@@ -166,36 +163,11 @@ TerrainFlyOverApp::draw()
     // Save current model-view-projection matrix by pushing a new matrix on top.
     gl::pushModelMatrix();
 
-    // Apply the rotation around the diagonal unit axis.
-    //gl::rotate(angle, vec3(1, 1, 1));
-
-    // Draw the duck model.
-    //mShapes[shapeIndex]->draw();
-
 	scene_->draw();
-
-	//mSphere->draw();
-
-	//gl::draw(mNormalMap);
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
 }
-
-
-//void TerrainFlyOverApp::keyDown(KeyEvent event) {
-//	int e = event.getCode();
-//	if (e == KeyEvent::KEY_w){
-//		mIsMovingForward = true;
-//	}
-//}
-//void TerrainFlyOverApp::keyUp(KeyEvent event) {
-//	int e = event.getCode();
-//	if (e == KeyEvent::KEY_w){
-//		mIsMovingForward = false;
-//	}
-//}
-
 
 void
 prepareSettings(TerrainFlyOverApp::Settings* settings)
