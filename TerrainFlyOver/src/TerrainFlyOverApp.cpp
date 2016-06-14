@@ -78,9 +78,9 @@ void
 TerrainFlyOverApp::setup()
 {
 	shapeIndex = 0;
-    // Arange for the window to always be on top. This helps with live shader
-    // coding
-    //getWindow()->setAlwaysOnTop();
+	// Arange for the window to always be on top. This helps with live shader
+	// coding
+	//getWindow()->setAlwaysOnTop();
 
 	auto normalMapImg = loadImage(loadAsset("Rock_01_local.jpg"));
 	mNormalMap = gl::Texture2d::create(normalMapImg);
@@ -88,9 +88,9 @@ TerrainFlyOverApp::setup()
 	auto heightMapImg = loadImage(loadAsset("Rock_01_h.jpg"));
 	mHeightMap = gl::Texture2d::create(heightMapImg);
 
-    // Create a live-reloading shader program.
+	// Create a live-reloading shader program.
 	bumpmapProgram = rtr::watcher.createWatchedProgram(
-      { getAssetPath("bumpmaping.vert"), getAssetPath("bumpmaping.frag") });
+	{ getAssetPath("bumpmaping.vert"), getAssetPath("bumpmaping.frag") });
 
 	bumpmap = rtr::Material::create(bumpmapProgram);
 
@@ -103,11 +103,26 @@ TerrainFlyOverApp::setup()
 	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 	bumpmap->texture("normalMap", mNormalMap);
 	bumpmap->texture("heightMap", mHeightMap);
-	
-	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000));
 
-	model_ = Node::create({ rtr::Model::create({ rtr::Shape::create({ plane }, bumpmap) }) });
-	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
+	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(4, 4));
+	ShapeRef planeShape = rtr::Shape::create({ plane }, bumpmap);
+	ModelRef planemodel = rtr::Model::create({planeShape});
+	model_ = Node::create({ planemodel });
+	std::vector<rtr::NodeRef> mNodes;
+
+	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 0)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 4)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, -4)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, 0)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, 4)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, -4)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 0)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, -4)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 4)), { model_ }));
+
+
+	//model_ = Node::create({mNodes});
+	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { mNodes });
 
 	camera_ = Node::create({}, translate(vec3(0, 0, 4)));
 	root_ = Node::create({}, mat4(), { scene_, camera_ });
@@ -141,17 +156,16 @@ TerrainFlyOverApp::update()
 void
 TerrainFlyOverApp::draw()
 {
-	//node navigator klasse programmieren
-
     // Clear background to gray.
     gl::clear(Color(0.5, 0.5, 0.5));
 
     // Setup a perspective projection camera.
-    CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
+    CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 20.0f);
 	gl::setMatrices(camera);
 	//mat4 toView = inverse(root_->find(camera_)[0].transform);
 	mat4 toView = inverse(cameraNav_.toWorld());
 	gl::setViewMatrix(toView);
+
 
     // Push the view-projection matrix to the bottom of the matrix stack.
     //gl::setMatrices(camera);
