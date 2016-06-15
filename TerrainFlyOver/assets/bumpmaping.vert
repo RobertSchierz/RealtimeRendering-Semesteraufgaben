@@ -49,7 +49,11 @@ void main(void) {
     //    movingTexture.x = 1.0;
     //}
 
-    float height = texture(heightMap, ciTexCoord0 - vec2(movSpeed, movSpeed)).r * 0.1;
+    vec2 tcc= ciTexCoord0 - vec2(movSpeed,0);
+    float density = texture(heightMap, tcc).r;
+    float height = density * 0.2;
+
+    //float height = texture(heightMap, ciTexCoord0 - vec2(movSpeed, 0)).r * 0.1;
     vec4 pos = ciPosition + vec4(ciNormal, 0) * height;
 
     // position to clip coordinates
@@ -61,7 +65,7 @@ void main(void) {
     // normal to eye coordinates
     normalDirEC = ciNormalMatrix * ciNormal;
 
-    TexCoord = ciTexCoord0 + vec2(movSpeed, movSpeed);
+    TexCoord = ciTexCoord0;
 
     //if(movSpeed != 1.0)
     //{

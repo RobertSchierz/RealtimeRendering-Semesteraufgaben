@@ -44,7 +44,7 @@ AbsolutePositionNavigator::keyDown(KeyEvent event)
 	switch (event.getCode()) {
 	case KeyEvent::KEY_DOWN:
 		if (event.isShiftDown()){
-			isMovingForward = true;
+			isMovingBackward = true;
 			
 			//trans[2] = speed;  // shift: Z
 			//ci::app::console() << "speed is: " << speed << std::endl;
@@ -52,20 +52,22 @@ AbsolutePositionNavigator::keyDown(KeyEvent event)
 			//else if (speed > maxSpeed) speed = maxSpeed;
 		}
 		else
-			trans[1] = -speed; // Y
+			trans[1] = -0.01; // Y
 		break;
 	case KeyEvent::KEY_UP:
 		if (event.isShiftDown())
 			//trans[2] = -speed; // shift: Z
 			isMovingForward = true;
 		else
-			trans[1] = speed; // Y
+			trans[1] = 0.01; // Y
 		break;
 	case KeyEvent::KEY_LEFT:
-		trans[0] = -speed; // X
+		//trans[0] = -speed; // X
+		isMovingLeft = true;
 		break;
 	case KeyEvent::KEY_RIGHT:
-		trans[0] = speed; // X
+		//trans[0] = speed; // X
+		isMovingRight = true;
 		break;
 	default:
 		return;
@@ -95,12 +97,18 @@ AbsolutePositionNavigator::keyUp(KeyEvent event)
 			isMovingBackward = false;
 		}
 		break;
+	case KeyEvent::KEY_LEFT:
+		isMovingLeft = false;
+		break;
+	case KeyEvent::KEY_RIGHT:
+		isMovingRight = false;
+		break;
 	default:
 		return;
 	}
 
 	// translate in model coords
-	mat4 toModel = inverse(toWorld());
-	node_->transform *= glm::translate(vec3(toModel*trans));
+	//mat4 toModel = inverse(toWorld());
+	//node_->transform *= glm::translate(vec3(toModel*trans));
 
 }

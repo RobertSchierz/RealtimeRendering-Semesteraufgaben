@@ -61,6 +61,14 @@ public:
 	bool getBackwardMovement(){
 		return isMovingBackward;
 	}
+
+	bool getLeftMovement(){
+		return isMovingLeft;
+	}
+
+	bool getRightMovement(){
+		return isMovingRight;
+	}
     
     // speed: how much is the position changed with one key press
     float speed;
@@ -69,6 +77,8 @@ public:
 
 	bool isMovingForward = false;
 	bool isMovingBackward = false;
+	bool isMovingLeft = false;
+	bool isMovingRight = false;
 
 };
 

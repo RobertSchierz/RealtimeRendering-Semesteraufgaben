@@ -45,9 +45,9 @@ class TerrainFlyOverApp : public App
     // Rotation angle used for the animation.
     double angle = 0.0;
 
-	float speed = 0.0;
+	float speed = 0.01;
 	float maxSpeed = 0.1;
-	float acceleration = 0.0001;
+	float acceleration = 0.001;
 
     // Tracking time between two draw() calls.
     double lastTime = getElapsedSeconds();
@@ -84,9 +84,11 @@ TerrainFlyOverApp::setup()
 
 	auto normalMapImg = loadImage(loadAsset("Rock_01_local.jpg"));
 	mNormalMap = gl::Texture2d::create(normalMapImg);
+	mNormalMap->setWrap(GL_REPEAT, GL_REPEAT);
 
 	auto heightMapImg = loadImage(loadAsset("Rock_01_h.jpg"));
 	mHeightMap = gl::Texture2d::create(heightMapImg);
+	mHeightMap->setWrap(GL_REPEAT, GL_REPEAT);
 
 	// Create a live-reloading shader program.
 	bumpmapProgram = rtr::watcher.createWatchedProgram(
@@ -95,7 +97,7 @@ TerrainFlyOverApp::setup()
 	bumpmap = rtr::Material::create(bumpmapProgram);
 
 	bumpmap->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
-	bumpmap->uniform("k_diffuse", vec3(0.54, 0.27, 0.07));
+	bumpmap->uniform("k_diffuse", vec3(0.0, 0.4, 0.07));
 	bumpmap->uniform("k_specular", vec3(1, 1, 1));
 	bumpmap->uniform("shininess", (float)200);
 	bumpmap->uniform("ambientLightColor", vec3(0, 0, 0));
@@ -144,12 +146,16 @@ TerrainFlyOverApp::update()
 
 	// Animate the rotation angle.
     angle += (M_PI / 10) * elapsed;
+	
+
+	speed += acceleration;
+	bumpmap->uniform("movSpeed", speed);
 
 	//if (cameraNav_.getForwardMovement()){
-		if (speed < maxSpeed)
+		/*if (speed < maxSpeed)
 			cameraNav_.setSpeed(speed += acceleration);
 		else if (speed > maxSpeed)
-			cameraNav_.setSpeed(maxSpeed);
+			cameraNav_.setSpeed(maxSpeed);*/
 	//}
 	//else{
 	//	speed = 0.0;
@@ -172,7 +178,7 @@ TerrainFlyOverApp::draw()
 	gl::setMatrices(camera);
 	//mat4 toView = inverse(root_->find(camera_)[0].transform);
 	mat4 toView = inverse(cameraNav_.toWorld());
-	ci::app::console() << "toView is: " << toView << std::endl;
+	//ci::app::console() << "toView is: " << toView << std::endl;
 
 	//float z = toView[3][2];
 	//ci::app::console() << "Value of z is: " << z << std::endl;
@@ -184,10 +190,6 @@ TerrainFlyOverApp::draw()
 
 	gl::setViewMatrix(toView);
 
-	if (cameraNav_.getForwardMovement())
-	{
-		bumpmap->uniform("movSpeed", speed);
-	}
 	/*else
 	{
 		bumpmap->uniform("movSpeed", (float)0);

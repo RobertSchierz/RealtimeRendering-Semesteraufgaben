@@ -88,7 +88,14 @@ main(void)
     //da Normalen negative Werte haben können müssen sie mit folgender Berechnung
     //in einen Bereich zwischen [-1,+1] umgewandelt werden
 
-    vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
+    //backup
+    //vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
+
+    vec2 tcc= TexCoord - vec2(movSpeed, 0);
+    //float density = texture(normalMap, tcc);
+
+    vec3 normalEC = 2.0 * texture2D(normalMap, tcc).rgb - 1.0;
+
     //float x = TexCoord.x;
     //if(x < 1.0) {
     //    x += movSpeed;
