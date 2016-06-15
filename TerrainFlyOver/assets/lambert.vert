@@ -13,8 +13,11 @@ in vec2 ciTexCoord0;
 
 out vec2 TexCoord;
 out vec3 Normal;
+out highp vec3	NormalWorldSpace;
 
 void main(void) {
+    NormalWorldSpace = vec3( ciPosition );
+
     gl_Position = ciModelViewProjection * ciPosition;
     Normal = ciNormalMatrix * ciNormal;
     TexCoord = ciTexCoord0;

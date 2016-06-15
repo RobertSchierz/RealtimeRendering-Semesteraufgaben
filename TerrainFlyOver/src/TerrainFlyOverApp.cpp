@@ -56,6 +56,9 @@ class TerrainFlyOverApp : public App
 
 	TrackballNavigator cameraMouseNav_;
 
+	gl::TextureCubeMapRef	mCubeMap;
+	gl::BatchRef			mSkyBoxBatch;
+
     // Rotation angle used for the animation.
     double angle = 0.0;
 
@@ -87,6 +90,8 @@ class TerrainFlyOverApp : public App
 	float zMov = 1.5;
 };
 
+const int SKY_BOX_SIZE = 500;
+
 // Place all one-time setup code here.
 void
 TerrainFlyOverApp::setup()
@@ -104,10 +109,15 @@ TerrainFlyOverApp::setup()
 	mHeightMap = gl::Texture2d::create(heightMapImg);
 	mHeightMap->setWrap(GL_REPEAT, GL_REPEAT);
 
-	auto cubeMapImg = loadImage(loadAsset("cubemap.jpg"));
-	gl::TextureCubeMapRef cubeMap = gl::TextureCubeMap::create(cubeMapImg);
+	auto cubeMapImg = loadImage(loadAsset("env_map.jpg"));
+	mCubeMap = gl::TextureCubeMap::create(cubeMapImg, gl::TextureCubeMap::Format().mipmap());
+	//cubeMap->setWrap(GL_REPEAT, GL_REPEAT);
 
-	cubeMap->setWrap(GL_CULL_FACE, GL_CULL_FACE);
+	/*auto skyBoxGlsl = rtr::watcher.createWatchedProgram(
+	{ getAssetPath("sky_box.vert"), getAssetPath("sky_box.frag") });
+	auto skyBoxMat = rtr::Material::create(skyBoxGlsl);*/
+
+	auto skyBoxGlsl = gl::GlslProg::create(loadAsset("sky_box.vert"), loadAsset("sky_box.frag"));
 	
 
 	auto lambertProgram = rtr::watcher.createWatchedProgram(
@@ -116,7 +126,7 @@ TerrainFlyOverApp::setup()
 
 	lambertMat->uniform("ka", vec3(0.2, 0.2, 0.2));
 	lambertMat->uniform("kd", vec3(1, 1, 1));
-	lambertMat->texture("cube_map", cubeMap);
+	lambertMat->texture("cube_map", mCubeMap);
 
 	// Create a live-reloading shader program.
 	bumpmapProgram = rtr::watcher.createWatchedProgram(
@@ -135,6 +145,8 @@ TerrainFlyOverApp::setup()
 	bumpmap->uniform("speedVec", vec2(-0.01, 0));
 
 	auto cube = ci::geom::Cube().size(10, 10, 10);
+	//mSkyBoxBatch = gl::Batch::create(geom::Cube().size(10, 10, 10), skyBoxGlsl);
+	//mSkyBoxBatch->getGlslProg()->uniform("uCubeMapTex", 0);
 	auto cubeShape = rtr::Shape::create({ cube }, lambertMat);
 	auto cubeModel = rtr::Model::create({ cubeShape });
 	auto cube_ = Node::create({ cubeModel });
@@ -214,6 +226,12 @@ TerrainFlyOverApp::draw()
     gl::pushModelMatrix();
 
 	scene_->draw();
+
+	// draw sky box
+	//gl::pushMatrices(); 
+	//	//gl::scale(SKY_BOX_SIZE, SKY_BOX_SIZE, SKY_BOX_SIZE);
+	//	mSkyBoxBatch->draw();
+	//gl::popMatrices();
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
