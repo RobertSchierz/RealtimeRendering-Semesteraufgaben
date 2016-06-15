@@ -110,5 +110,74 @@ AbsolutePositionNavigator::keyUp(KeyEvent event)
 	// translate in model coords
 	//mat4 toModel = inverse(toWorld());
 	//node_->transform *= glm::translate(vec3(toModel*trans));
+}
+
+void
+TrackballNavigator::mouseDrag(MouseEvent event){
+
+	// how much did the mouse move?
+	vec2 now = vec2(event.getPos());
+	vec2 delta = now - lastPosition_;
+	lastPosition_ = now;
+
+	// not enough movement -> do nothing
+	if (length(delta) < 2)
+		return;
+
+	// apply to panning or rotation
+	if (event.isShiftDown())
+		pan(vec3(delta * vec2(1, -1) * this->panSensitivity, 0));
+	else{
+		rotate(delta * this->rotationSensitivity);
+	}
+}
+
+
+
+
+void
+TrackballNavigator::mouseDown(MouseEvent event){
+	if (event.isLeft()){
+		lastPosition_ = event.getPos();
+	}
+}
+
+void
+TrackballNavigator::mouseWheel(MouseEvent event){
+	// zoom according to wheel movement
+	float inc = event.getWheelIncrement();
+	if (inc != 0.0)
+		pan(vec3(0, 0, -inc * this->zoomSensitivity));
+}
+
+
+void
+TrackballNavigator::rotate(vec2 degrees)
+{
+	// transformation from camera coords to model coords
+
+	mat4 toModel = toWorld();
+	mat4 inverseToModel = inverse(toModel);
+
+	// axes transformed into model space
+	vec3 xAxis = vec3(inverseToModel[0]);
+	vec3 yAxis = vec3(inverseToModel[1]);
+
+	// rotate around transformed X and Y axes
+	float RadiansX = toRadians(degrees[1]);
+	float RadiansY = toRadians(degrees[0]);
+
+	node_->transform *= glm::rotate(RadiansX, xAxis);
+	node_->transform *= glm::rotate(RadiansY, yAxis);
+
+}
+
+void
+TrackballNavigator::pan(vec3 translation)
+{
+	// translation transformed into model space
+	mat4 toModel = inverse(toWorld());
+	vec4 translationMC = toModel*vec4(translation, 0);
+	node_->transform *= glm::translate(vec3(translationMC));
 
 }

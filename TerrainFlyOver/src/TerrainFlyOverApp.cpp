@@ -36,11 +36,25 @@ class TerrainFlyOverApp : public App
 		cameraNav_.keyUp(event);
 	}
 
+	void mouseDrag(MouseEvent event) override{
+		cameraMouseNav_.mouseDrag(event);
+	}
+
+	void mouseDown(MouseEvent event) override{
+		cameraMouseNav_.mouseDown(event);
+	}
+
+	void mouseWheel(MouseEvent event) override{
+		cameraMouseNav_.mouseWheel(event);
+	}
+
   private:
 
 	NodeRef camera_, root_, scene_, model_;
 
 	AbsolutePositionNavigator cameraNav_;
+
+	TrackballNavigator cameraMouseNav_;
 
     // Rotation angle used for the animation.
     double angle = 0.0;
@@ -133,6 +147,8 @@ TerrainFlyOverApp::setup()
 	root_ = Node::create({}, mat4(), { scene_, camera_ });
 
 	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
+
+	cameraMouseNav_ = TrackballNavigator(camera_);
 }
 
 // Place all non-OpenGL once-per-frame code here.
