@@ -48,14 +48,27 @@ public:
     // process (shift) cursor keys
     void keyDown(cinder::app::KeyEvent event);
 
+	void keyUp(cinder::app::KeyEvent event);
+
 	void setSpeed(float inSpeed){
 		speed = inSpeed;
+	}
+
+	bool getForwardMovement(){
+		return isMovingForward;
+	}
+
+	bool getBackwardMovement(){
+		return isMovingBackward;
 	}
     
     // speed: how much is the position changed with one key press
     float speed;
 	float maxSpeed = 0.1;
 	float acceleration = 0.01;
+
+	bool isMovingForward = false;
+	bool isMovingBackward = false;
 
 };
 

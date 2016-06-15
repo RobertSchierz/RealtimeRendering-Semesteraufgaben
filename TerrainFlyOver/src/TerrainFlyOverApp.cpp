@@ -33,7 +33,7 @@ class TerrainFlyOverApp : public App
 	}
 
 	void keyUp(KeyEvent event) override {
-		// not relevant here
+		cameraNav_.keyUp(event);
 	}
 
   private:
@@ -69,7 +69,7 @@ class TerrainFlyOverApp : public App
 	std::vector<rtr::ShapeRef> mShapes;
 	int shapeIndex;
 
-	bool mIsMovingForward = false;
+	//bool mIsMovingForward = false;
 	float zMov = 1.5;
 };
 
@@ -103,28 +103,31 @@ TerrainFlyOverApp::setup()
 	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 	bumpmap->texture("normalMap", mNormalMap);
 	bumpmap->texture("heightMap", mHeightMap);
+	bumpmap->uniform("movSpeed", (float)0);
 
-	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(4, 4));
+	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(8, 8));
 	ShapeRef planeShape = rtr::Shape::create({ plane }, bumpmap);
 	ModelRef planemodel = rtr::Model::create({planeShape});
 	model_ = Node::create({ planemodel });
 	std::vector<rtr::NodeRef> mNodes;
 
 	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 0)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 4)), { model_ }));
+	/*mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 4)), { model_ }));
 	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, -4)), { model_ }));
 	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, 0)), { model_ }));
 	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, 4)), { model_ }));
 	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, -4)), { model_ }));
 	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 0)), { model_ }));
 	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, -4)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 4)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 4)), { model_ }));*/
+
+	
 
 
 	//model_ = Node::create({mNodes});
 	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { mNodes });
 
-	camera_ = Node::create({}, translate(vec3(0, 0, 4)));
+	camera_ = Node::create({}, translate(vec3(0, 0.2, 0)));
 	root_ = Node::create({}, mat4(), { scene_, camera_ });
 
 	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
@@ -142,10 +145,15 @@ TerrainFlyOverApp::update()
 	// Animate the rotation angle.
     angle += (M_PI / 10) * elapsed;
 
-	if (speed < maxSpeed) 
-		cameraNav_.setSpeed(speed += acceleration);
-	else if (speed > maxSpeed) 
-		cameraNav_.setSpeed(maxSpeed);
+	//if (cameraNav_.getForwardMovement()){
+		if (speed < maxSpeed)
+			cameraNav_.setSpeed(speed += acceleration);
+		else if (speed > maxSpeed)
+			cameraNav_.setSpeed(maxSpeed);
+	//}
+	//else{
+	//	speed = 0.0;
+	//}
 	
 
     // Check now whether any files changed.
@@ -164,7 +172,26 @@ TerrainFlyOverApp::draw()
 	gl::setMatrices(camera);
 	//mat4 toView = inverse(root_->find(camera_)[0].transform);
 	mat4 toView = inverse(cameraNav_.toWorld());
+	ci::app::console() << "toView is: " << toView << std::endl;
+
+	//float z = toView[3][2];
+	//ci::app::console() << "Value of z is: " << z << std::endl;
+	//if (z > 4.0)
+	//{
+	//	
+	//	toView[3][2] = -z;
+	//}
+
 	gl::setViewMatrix(toView);
+
+	if (cameraNav_.getForwardMovement())
+	{
+		bumpmap->uniform("movSpeed", speed);
+	}
+	/*else
+	{
+		bumpmap->uniform("movSpeed", (float)0);
+	}*/
 
 
     // Push the view-projection matrix to the bottom of the matrix stack.

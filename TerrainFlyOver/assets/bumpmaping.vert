@@ -19,6 +19,8 @@ uniform mat4 ciModelView;
 uniform mat3 ciNormalMatrix;
 
 uniform sampler2D heightMap;
+//for fake camera movement
+uniform float movSpeed;
 
 // position and normal vectors
 in vec4 ciPosition;
@@ -34,7 +36,20 @@ out vec2 TexCoord;
 
 void main(void) {
 
-    float height = texture(heightMap, ciTexCoord0).r * 0.05;
+    //float x = ciTexCoord0.x;
+    //if(x < 1.0) {
+    //    x -= movSpeed;
+    //}else{
+    //    x = 0.0;
+    //}
+
+    //vec2 movingTexture = vec2(ciTexCoord0.x - movSpeed, ciTexCoord0.y);
+    //if(movingTexture.x < 0.0)
+    //{
+    //    movingTexture.x = 1.0;
+    //}
+
+    float height = texture(heightMap, ciTexCoord0 - vec2(movSpeed, movSpeed)).r * 0.1;
     vec4 pos = ciPosition + vec4(ciNormal, 0) * height;
 
     // position to clip coordinates
@@ -46,5 +61,13 @@ void main(void) {
     // normal to eye coordinates
     normalDirEC = ciNormalMatrix * ciNormal;
 
-    TexCoord = ciTexCoord0;
+    TexCoord = ciTexCoord0 + vec2(movSpeed, movSpeed);
+
+    //if(movSpeed != 1.0)
+    //{
+    //    TexCoord = ciTexCoord0;
+    //    TexCoord.x *= movSpeed;
+    //}else{
+
+    //}
 }

@@ -27,6 +27,8 @@ uniform vec4 lightPositionEC; // in eye coordinates!
 uniform mat4 ciModelView;
 uniform mat4 ciProjectionMatrix;
 
+uniform float movSpeed;
+
 // vertex position from vertex shader, in eye coordinates
 in vec4 vertexPositionEC;
 
@@ -85,7 +87,23 @@ main(void)
     //texturen werden in einen Bereich von [0,1] in den Fragment Shader geladen
     //da Normalen negative Werte haben können müssen sie mit folgender Berechnung
     //in einen Bereich zwischen [-1,+1] umgewandelt werden
+
     vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
+    //float x = TexCoord.x;
+    //if(x < 1.0) {
+    //    x += movSpeed;
+    //}else{
+    //    x = 0.0;
+    //}
+
+    //vec2 movingTexture = vec2(TexCoord.x - movSpeed, TexCoord.y);
+    //if(movingTexture.x < 0.0)
+    //{
+    //    movingTexture.x = 1.0;
+    //}
+
+    //vec3 normalEC = 2.0 * texture2D(normalMap, mod(movingTexture, 1.0)).rgb - 1.0;
+
     normalEC = normalize(normalEC);
 
     // calculate light direction (for point light)
