@@ -22,6 +22,13 @@ uniform sampler2D heightMap;
 //for fake camera movement
 uniform float movSpeed;
 
+uniform vec2 speedVec;
+
+uniform bool forward;
+uniform bool backward;
+uniform bool left;
+uniform bool right;
+
 // position and normal vectors
 in vec4 ciPosition;
 in vec3 ciNormal;
@@ -49,7 +56,12 @@ void main(void) {
     //    movingTexture.x = 1.0;
     //}
 
-    vec2 tcc= ciTexCoord0 - vec2(movSpeed,0);
+    float xOffset = speedVec.x;
+    float yOffset = speedVec.y;
+
+
+
+    vec2 tcc = ciTexCoord0 + vec2(xOffset, yOffset);
     float density = texture(heightMap, tcc).r;
     float height = density * 0.2;
 
@@ -65,7 +77,7 @@ void main(void) {
     // normal to eye coordinates
     normalDirEC = ciNormalMatrix * ciNormal;
 
-    TexCoord = ciTexCoord0;
+    TexCoord = tcc;
 
     //if(movSpeed != 1.0)
     //{

@@ -1,4 +1,4 @@
-﻿Der Buildvorgang wurde am 15.06.2016 19:00:36 gestartet.
+﻿Der Buildvorgang wurde am 15.06.2016 21:41:57 gestartet.
      1>Projekt "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" auf Knoten "2", Build Ziel(e).
      1>Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe" /INCREMENTAL /NOLOGO /LIBPATH:..\..\..\cinder_0.9.0_vc2013\lib\msw\x86 "cinder-v120_d.lib" OpenGL32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCPMT /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.lib" /MACHINE:X86 Debug\Resources.res
@@ -9,9 +9,10 @@
          Debug\WatchThis.obj
          Debug\tiny_obj_loader.obj
          Debug\TerrainFlyOverApp.obj
+         LINK : C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe wurde nicht gefunden oder beim letzten inkrementellen Linkvorgang nicht erstellt; vollständiger Link wird durchgeführt.
          TerrainFlyOver.vcxproj -> C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\Debug\TerrainFlyOver.exe
      1>Die Erstellung des Projekts "C:\Users\Jan\Documents\Uni\Real-Time-Rendering\rtr-jan_a\TerrainFlyOver\vc2013\TerrainFlyOver.vcxproj" ist abgeschlossen, Build Ziel(e).
 
 Build erfolgreich.
 
-Verstrichene Zeit 00:00:02.40
+Verstrichene Zeit 00:00:02.30

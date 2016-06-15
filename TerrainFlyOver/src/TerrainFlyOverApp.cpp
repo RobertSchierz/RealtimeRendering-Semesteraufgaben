@@ -119,26 +119,15 @@ TerrainFlyOverApp::setup()
 	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 	bumpmap->texture("normalMap", mNormalMap);
 	bumpmap->texture("heightMap", mHeightMap);
-	bumpmap->uniform("movSpeed", (float)0);
+	bumpmap->uniform("speedVec", vec2(-0.01, 0));
 
-	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(8, 8));
+	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(10, 10));
 	ShapeRef planeShape = rtr::Shape::create({ plane }, bumpmap);
 	ModelRef planemodel = rtr::Model::create({planeShape});
 	model_ = Node::create({ planemodel });
 	std::vector<rtr::NodeRef> mNodes;
 
 	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 0)), { model_ }));
-	/*mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 4)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, -4)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, 0)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, 4)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(4, 0, -4)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 0)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, -4)), { model_ }));
-	mNodes.push_back(Node::create({}, glm::translate(vec3(-4, 0, 4)), { model_ }));*/
-
-	
-
 
 	//model_ = Node::create({mNodes});
 	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { mNodes });
@@ -162,12 +151,9 @@ TerrainFlyOverApp::update()
 
 	// Animate the rotation angle.
     angle += (M_PI / 10) * elapsed;
-	
 
-	speed += acceleration;
-	bumpmap->uniform("movSpeed", speed);
+	bumpmap->uniform("speedVec", cameraNav_.getSpeed());
 
-	//if (cameraNav_.getForwardMovement()){
 		/*if (speed < maxSpeed)
 			cameraNav_.setSpeed(speed += acceleration);
 		else if (speed > maxSpeed)
@@ -196,21 +182,7 @@ TerrainFlyOverApp::draw()
 	mat4 toView = inverse(cameraNav_.toWorld());
 	//ci::app::console() << "toView is: " << toView << std::endl;
 
-	//float z = toView[3][2];
-	//ci::app::console() << "Value of z is: " << z << std::endl;
-	//if (z > 4.0)
-	//{
-	//	
-	//	toView[3][2] = -z;
-	//}
-
 	gl::setViewMatrix(toView);
-
-	/*else
-	{
-		bumpmap->uniform("movSpeed", (float)0);
-	}*/
-
 
     // Push the view-projection matrix to the bottom of the matrix stack.
     //gl::setMatrices(camera);

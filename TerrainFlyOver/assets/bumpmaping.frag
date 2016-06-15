@@ -91,10 +91,10 @@ main(void)
     //backup
     //vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
 
-    vec2 tcc= TexCoord - vec2(movSpeed, 0);
+    //vec2 tcc= TexCoord - vec2(movSpeed, 0);
     //float density = texture(normalMap, tcc);
 
-    vec3 normalEC = 2.0 * texture2D(normalMap, tcc).rgb - 1.0;
+    vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
 
     //float x = TexCoord.x;
     //if(x < 1.0) {

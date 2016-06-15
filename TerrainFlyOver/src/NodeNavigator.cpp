@@ -44,30 +44,34 @@ AbsolutePositionNavigator::keyDown(KeyEvent event)
 	switch (event.getCode()) {
 	case KeyEvent::KEY_DOWN:
 		if (event.isShiftDown()){
-			isMovingBackward = true;
-			
-			//trans[2] = speed;  // shift: Z
-			//ci::app::console() << "speed is: " << speed << std::endl;
-			//if (speed < maxSpeed) speed += acceleration;
-			//else if (speed > maxSpeed) speed = maxSpeed;
-		}
-		else
+
 			trans[1] = -0.01; // Y
+		}else{
+			speedU += acceleration;
+		}
+			
 		break;
 	case KeyEvent::KEY_UP:
 		if (event.isShiftDown())
-			//trans[2] = -speed; // shift: Z
-			isMovingForward = true;
-		else
 			trans[1] = 0.01; // Y
+		else{
+			speedU -= acceleration;
+		}
+			
 		break;
 	case KeyEvent::KEY_LEFT:
 		//trans[0] = -speed; // X
-		isMovingLeft = true;
+		speedV += acceleration;
 		break;
 	case KeyEvent::KEY_RIGHT:
 		//trans[0] = speed; // X
-		isMovingRight = true;
+		speedV -= acceleration;
+		break;
+	case KeyEvent::KEY_COMMA:
+		acceleration -= 0.001;
+		break;
+	case KeyEvent::KEY_MINUS:
+		acceleration += 0.001;
 		break;
 	default:
 		return;
@@ -88,20 +92,12 @@ AbsolutePositionNavigator::keyUp(KeyEvent event)
 	// depending on key press, change position
 	switch (event.getCode()) {
 	case KeyEvent::KEY_UP:
-		if (event.isShiftDown()){
-			isMovingForward = false;
-		}
 		break;
 	case KeyEvent::KEY_DOWN:
-		if (event.isShiftDown()){
-			isMovingBackward = false;
-		}
 		break;
 	case KeyEvent::KEY_LEFT:
-		isMovingLeft = false;
 		break;
 	case KeyEvent::KEY_RIGHT:
-		isMovingRight = false;
 		break;
 	default:
 		return;

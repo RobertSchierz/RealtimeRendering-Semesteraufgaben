@@ -50,36 +50,15 @@ public:
 
 	void keyUp(cinder::app::KeyEvent event);
 
-	void setSpeed(float inSpeed){
-		speed = inSpeed;
-	}
-
-	bool getForwardMovement(){
-		return isMovingForward;
-	}
-
-	bool getBackwardMovement(){
-		return isMovingBackward;
-	}
-
-	bool getLeftMovement(){
-		return isMovingLeft;
-	}
-
-	bool getRightMovement(){
-		return isMovingRight;
+	glm::vec2 getSpeed(){
+		return glm::vec2(speedU, speedV);
 	}
     
     // speed: how much is the position changed with one key press
-    float speed;
+    float speedU = -0.01;
+	float speedV = 0.0;
 	float maxSpeed = 0.1;
-	float acceleration = 0.01;
-
-	bool isMovingForward = false;
-	bool isMovingBackward = false;
-	bool isMovingLeft = false;
-	bool isMovingRight = false;
-
+	float acceleration = 0.001;
 };
 
 /* left mouse button to rotate; shift-drag to pan, wheel to zoom */
@@ -98,7 +77,7 @@ public:
     void mouseWheel(cinder::app::MouseEvent event);
     
     // sensitivities
-    float rotationSensitivity = 1.0; // degrees per pixel mouse movement
+    float rotationSensitivity = 0.1; // degrees per pixel mouse movement
     float panSensitivity = 0.01;      // translation per pixel mouse movement
     float zoomSensitivity = 0.2;     // translation per pixel mouse movement
     
