@@ -104,10 +104,23 @@ TerrainFlyOverApp::setup()
 	mHeightMap = gl::Texture2d::create(heightMapImg);
 	mHeightMap->setWrap(GL_REPEAT, GL_REPEAT);
 
+	auto cubeMapImg = loadImage(loadAsset("cubemap.jpg"));
+	gl::TextureCubeMapRef cubeMap = gl::TextureCubeMap::create(cubeMapImg);
+
+	cubeMap->setWrap(GL_CULL_FACE, GL_CULL_FACE);
+	
+
+	auto lambertProgram = rtr::watcher.createWatchedProgram(
+	{ getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
+	auto lambertMat = rtr::Material::create(lambertProgram);
+
+	lambertMat->uniform("ka", vec3(0.2, 0.2, 0.2));
+	lambertMat->uniform("kd", vec3(1, 1, 1));
+	lambertMat->texture("cube_map", cubeMap);
+
 	// Create a live-reloading shader program.
 	bumpmapProgram = rtr::watcher.createWatchedProgram(
 	{ getAssetPath("bumpmaping.vert"), getAssetPath("bumpmaping.frag") });
-
 	bumpmap = rtr::Material::create(bumpmapProgram);
 
 	bumpmap->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
@@ -121,6 +134,11 @@ TerrainFlyOverApp::setup()
 	bumpmap->texture("heightMap", mHeightMap);
 	bumpmap->uniform("speedVec", vec2(-0.01, 0));
 
+	auto cube = ci::geom::Cube().size(10, 10, 10);
+	auto cubeShape = rtr::Shape::create({ cube }, lambertMat);
+	auto cubeModel = rtr::Model::create({ cubeShape });
+	auto cube_ = Node::create({ cubeModel });
+
 	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(10, 10));
 	ShapeRef planeShape = rtr::Shape::create({ plane }, bumpmap);
 	ModelRef planemodel = rtr::Model::create({planeShape});
@@ -128,6 +146,7 @@ TerrainFlyOverApp::setup()
 	std::vector<rtr::NodeRef> mNodes;
 
 	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 0)), { model_ }));
+	mNodes.push_back(Node::create({}, glm::translate(vec3(0, 0, 0)), { cube_ }));
 
 	//model_ = Node::create({mNodes});
 	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { mNodes });

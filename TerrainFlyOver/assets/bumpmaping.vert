@@ -24,11 +24,6 @@ uniform float movSpeed;
 
 uniform vec2 speedVec;
 
-uniform bool forward;
-uniform bool backward;
-uniform bool left;
-uniform bool right;
-
 // position and normal vectors
 in vec4 ciPosition;
 in vec3 ciNormal;
@@ -43,12 +38,10 @@ out vec2 TexCoord;
 
 void main(void) {
 
-    //float x = ciTexCoord0.x;
-    //if(x < 1.0) {
-    //    x -= movSpeed;
-    //}else{
-    //    x = 0.0;
-    //}
+    //float fog; // amount of fog to apply
+    //float fog_coord; // distance for fog calculation...
+    //float end_fog = 20;
+    //vec4 fog_color = vec4(0.5, 0.5, 0.5);
 
     //vec2 movingTexture = vec2(ciTexCoord0.x - movSpeed, ciTexCoord0.y);
     //if(movingTexture.x < 0.0)
@@ -79,11 +72,10 @@ void main(void) {
 
     TexCoord = tcc;
 
-    //if(movSpeed != 1.0)
-    //{
-    //    TexCoord = ciTexCoord0;
-    //    TexCoord.x *= movSpeed;
-    //}else{
-
-    //}
+    //calculate fog
+    //fog_coord = abs(gl_Position.z);
+    //fog_coord = clamp( fog_coord, 0.0, end_fog);
+    //fog = (end_fog - fog_coord)/end_fog;
+    //fog = clamp( fog, 0.0, 1.0);
+    //gl_FrontColor = mix(fog_color, gl_Color, fog);
 }

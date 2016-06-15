@@ -40,7 +40,6 @@ in vec2 TexCoord;
 // output: color
 out vec4 outColor;
 
-
 // calculate Phong-style local illumination
 vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 {
@@ -76,6 +75,30 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 
 }
 
+vec3
+calculateFog(vec3 viewDir, vec3 phongIllumColor){
+    //distance
+    float dist = 0;
+    vec3 fogColor = vec3(0.5, 0.5, 0.5);
+    float fogFactor = 0;
+    float fogEnd = 5;
+    float fogStart = 3;
+
+
+    dist = (gl_FragCoord.z / gl_FragCoord.w);
+    //dist = abs(viewDir.z);
+    //dist = length(viewDir);
+    fogFactor = (fogEnd - dist) / (fogEnd - fogStart);
+
+    // 20 - fog starts; 80 - fog ends
+    //fogFactor = (99 - dist)/(80 - 20);
+    fogFactor = clamp( fogFactor, 0.0, 1.0 );
+
+    //if you inverse color in glsl mix function you have to
+    //put 1.0 - fogFactor
+    return mix(fogColor, phongIllumColor, fogFactor);
+}
+
 void
 main(void)
 {
@@ -90,26 +113,10 @@ main(void)
 
     //backup
     //vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
-
     //vec2 tcc= TexCoord - vec2(movSpeed, 0);
     //float density = texture(normalMap, tcc);
 
     vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
-
-    //float x = TexCoord.x;
-    //if(x < 1.0) {
-    //    x += movSpeed;
-    //}else{
-    //    x = 0.0;
-    //}
-
-    //vec2 movingTexture = vec2(TexCoord.x - movSpeed, TexCoord.y);
-    //if(movingTexture.x < 0.0)
-    //{
-    //    movingTexture.x = 1.0;
-    //}
-
-    //vec3 normalEC = 2.0 * texture2D(normalMap, mod(movingTexture, 1.0)).rgb - 1.0;
 
     normalEC = normalize(normalEC);
 
@@ -127,8 +134,10 @@ main(void)
     // calculate color using phong illumination
     vec3 color = phongIllum(normalEC, viewdirEC, lightDirEC);
 
+    vec3 interpolatedFogColor = calculateFog(viewdirEC, color);
+
     // out to frame buffer
-    outColor = vec4(color, 1);
+    outColor = vec4(interpolatedFogColor, 1);
     //outColor = texture(normalMap, TexCoord);
 
     // outColor = vec4((vertexPositionEC.xyz+vec3(1))/4,1);
