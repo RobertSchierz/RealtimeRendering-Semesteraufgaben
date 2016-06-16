@@ -73,6 +73,14 @@ AbsolutePositionNavigator::keyDown(KeyEvent event)
 	case KeyEvent::KEY_MINUS:
 		acceleration += 0.001;
 		break;
+	case KeyEvent::KEY_d:
+		node_->transform *= glm::rotate(toRadians(-10.0f), vec3(0, 1, 0));
+		//speedV -= 10 / 360;
+		break;
+	case KeyEvent::KEY_a:
+		node_->transform *= glm::rotate(toRadians(10.0f), vec3(0, 1, 0));
+		//speedV -= 10 / 360;
+		break;
 	default:
 		return;
 	}

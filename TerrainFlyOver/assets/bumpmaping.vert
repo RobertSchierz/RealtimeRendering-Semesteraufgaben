@@ -36,18 +36,14 @@ out vec3 normalDirEC;
 
 out vec2 TexCoord;
 
+out vec4 vertexPos;
+
 void main(void) {
 
     //float fog; // amount of fog to apply
     //float fog_coord; // distance for fog calculation...
     //float end_fog = 20;
     //vec4 fog_color = vec4(0.5, 0.5, 0.5);
-
-    //vec2 movingTexture = vec2(ciTexCoord0.x - movSpeed, ciTexCoord0.y);
-    //if(movingTexture.x < 0.0)
-    //{
-    //    movingTexture.x = 1.0;
-    //}
 
     float xOffset = speedVec.x;
     float yOffset = speedVec.y;
@@ -56,9 +52,9 @@ void main(void) {
 
     vec2 tcc = ciTexCoord0 + vec2(xOffset, yOffset);
     float density = texture(heightMap, tcc).r;
-    float height = density * 0.2;
+    float height = density * 0.3;
 
-    //float height = texture(heightMap, ciTexCoord0 - vec2(movSpeed, 0)).r * 0.1;
+    //float height = texture(heightMap, ciTexCoord - vec2(movSpeed, 0)).r * 0.1;
     vec4 pos = ciPosition + vec4(ciNormal, 0) * height;
 
     // position to clip coordinates
@@ -71,6 +67,8 @@ void main(void) {
     normalDirEC = ciNormalMatrix * ciNormal;
 
     TexCoord = tcc;
+
+    vertexPos = pos;
 
     //calculate fog
     //fog_coord = abs(gl_Position.z);

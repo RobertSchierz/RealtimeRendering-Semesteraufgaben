@@ -109,6 +109,18 @@ TerrainFlyOverApp::setup()
 	mHeightMap = gl::Texture2d::create(heightMapImg);
 	mHeightMap->setWrap(GL_REPEAT, GL_REPEAT);
 
+	auto rocksImg = loadImage(loadAsset("rocks.jpg"));
+	auto rocksTex = gl::Texture2d::create(rocksImg);
+	rocksTex->setWrap(GL_REPEAT, GL_REPEAT);
+
+	auto grassImg = loadImage(loadAsset("grass.png"));
+	auto grassTex = gl::Texture2d::create(grassImg);
+	grassTex->setWrap(GL_REPEAT, GL_REPEAT);
+
+	auto snowImg = loadImage(loadAsset("snow.jpg"));
+	auto snowTex = gl::Texture2d::create(snowImg);
+	snowTex->setWrap(GL_REPEAT, GL_REPEAT);
+
 	auto cubeMapImg = loadImage(loadAsset("env_map.jpg"));
 	mCubeMap = gl::TextureCubeMap::create(cubeMapImg, gl::TextureCubeMap::Format().mipmap());
 	//cubeMap->setWrap(GL_REPEAT, GL_REPEAT);
@@ -119,7 +131,6 @@ TerrainFlyOverApp::setup()
 
 	auto skyBoxGlsl = gl::GlslProg::create(loadAsset("sky_box.vert"), loadAsset("sky_box.frag"));
 	
-
 	auto lambertProgram = rtr::watcher.createWatchedProgram(
 	{ getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 	auto lambertMat = rtr::Material::create(lambertProgram);
@@ -136,12 +147,15 @@ TerrainFlyOverApp::setup()
 	bumpmap->uniform("k_ambient", vec3(0.2, 0.2, 0.2));
 	bumpmap->uniform("k_diffuse", vec3(0.0, 0.4, 0.07));
 	bumpmap->uniform("k_specular", vec3(1, 1, 1));
-	bumpmap->uniform("shininess", (float)200);
+	bumpmap->uniform("shininess", (float)1000);
 	bumpmap->uniform("ambientLightColor", vec3(0, 0, 0));
 	bumpmap->uniform("lightColor", vec3(1, 1, 1));
 	bumpmap->uniform("lightPositionEC", vec4(1, 3, 1, 1));
 	bumpmap->texture("normalMap", mNormalMap);
 	bumpmap->texture("heightMap", mHeightMap);
+	bumpmap->texture("grass", grassTex);
+	bumpmap->texture("snow", snowTex);
+	bumpmap->texture("rocks", rocksTex);
 	bumpmap->uniform("speedVec", vec2(-0.01, 0));
 
 	auto cube = ci::geom::Cube().size(10, 10, 10);
@@ -226,12 +240,6 @@ TerrainFlyOverApp::draw()
     gl::pushModelMatrix();
 
 	scene_->draw();
-
-	// draw sky box
-	//gl::pushMatrices(); 
-	//	//gl::scale(SKY_BOX_SIZE, SKY_BOX_SIZE, SKY_BOX_SIZE);
-	//	mSkyBoxBatch->draw();
-	//gl::popMatrices();
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();

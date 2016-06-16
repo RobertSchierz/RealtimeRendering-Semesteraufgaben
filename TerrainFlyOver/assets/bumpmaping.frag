@@ -18,6 +18,11 @@ uniform float shininess;
 uniform sampler2D normalMap;
 uniform sampler2D heightMap;
 
+//Textures
+uniform sampler2D grass;
+uniform sampler2D rocks;
+uniform sampler2D snow;
+
 // ambient light and point light
 uniform vec3 ambientLightColor;
 uniform vec3 lightColor;
@@ -37,6 +42,8 @@ in vec3 normalDirEC;
 
 in vec2 TexCoord;
 
+in vec4 vertexPos;
+
 // output: color
 out vec4 outColor;
 
@@ -44,6 +51,10 @@ out vec4 outColor;
 vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 {
     //normalDir = texture(normalMap, TexCoord).rgb * 2.0 - 1.0;
+
+    vec3 cGrass = texture(grass, TexCoord).rgb;
+    vec3 cRocks = texture(rocks, TexCoord).rgb;
+    vec3 cSnow = texture(snow, TexCoord).rgb;
 
     // ambient part
     vec3 ambient = k_ambient * ambientLightColor;
@@ -58,8 +69,23 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     //if(ndotl<0.0)
     //    return vec3(0,0,0); // shadow / facing away from the light source
 
+    float numberOfShades = 3.0;
+    float shadeFactor = 1.0 / numberOfShades;
+    float shades = floor(vertexPos.y * numberOfShades) * shadeFactor;
+
+
+    vec3 calculatedTexColor = cGrass;
+
+    float y = vertexPos.y;
+
+    if(y <0.1) calculatedTexColor = mix(cGrass , cRocks, ndotl) ;
+    if(y > 0.1 && y <= 0.3) calculatedTexColor = cRocks;
+    if(y > 0.3) calculatedTexColor = cSnow;
+
+
+
     // diffuse contribution
-    vec3 diffuse = k_diffuse * lightColor * ndotl;
+    vec3 diffuse = calculatedTexColor * lightColor * ndotl;
 
     // reflected light direction = perfect reflection direction
     vec3 r = reflect(lightDir,normalDir);
@@ -71,7 +97,7 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
     vec3 specular = k_specular * lightColor * pow(rdotv, shininess);
 
     // return sum of all contributions
-    return ambient + diffuse + specular;
+    return ambient + diffuse;
 
 }
 
@@ -86,8 +112,6 @@ calculateFog(vec3 viewDir, vec3 phongIllumColor){
 
 
     dist = (gl_FragCoord.z / gl_FragCoord.w);
-    //dist = abs(viewDir.z);
-    //dist = length(viewDir);
     fogFactor = (fogEnd - dist) / (fogEnd - fogStart);
 
     // 20 - fog starts; 80 - fog ends
