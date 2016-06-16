@@ -45,12 +45,12 @@ void main(void) {
     //float end_fog = 20;
     //vec4 fog_color = vec4(0.5, 0.5, 0.5);
 
-    float xOffset = speedVec.x;
-    float yOffset = speedVec.y;
+    //float xOffset = speedVec.x;
+    //float yOffset = speedVec.y;
 
 
 
-    vec2 tcc = ciTexCoord0 + vec2(xOffset, yOffset);
+    vec2 tcc = ciTexCoord0 + speedVec;
     float density = texture(heightMap, tcc).r;
     float height = density * 0.3;
 

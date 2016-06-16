@@ -78,9 +78,14 @@ vec3 phongIllum(vec3 normalDir, vec3 viewDir, vec3 lightDir)
 
     float y = vertexPos.y;
 
-    if(y <0.1) calculatedTexColor = mix(cGrass , cRocks, ndotl) ;
-    if(y > 0.1 && y <= 0.3) calculatedTexColor = cRocks;
-    if(y > 0.3) calculatedTexColor = cSnow;
+    float t = clamp((y - 0.05) / (0.1 - 0.05), 0.0, 1.0);
+    float t2 = clamp((y - 0.2) / (0.25 - 0.2), 0.0, 1.0);
+
+    //if(y <0.1) calculatedTexColor = mix(cGrass , cRocks, ndotl) ;
+    if(y <= 0.2) calculatedTexColor = mix(cGrass, cRocks, t);
+    if(y > 0.2) calculatedTexColor = mix(cRocks, cSnow, t2);
+
+    //smooth step
 
 
 
@@ -127,7 +132,7 @@ void
 main(void)
 {
     // normalize normal after projection
-    //vec3 normalEC = normalize(normalDirEC);
+    vec3 normalEC = normalize(normalDirEC);
 
     //https://www.opengl.org/sdk/docs/tutorials/TyphoonLabs/Chapter_4.pdf
     //calculate normals from normal map
@@ -140,7 +145,8 @@ main(void)
     //vec2 tcc= TexCoord - vec2(movSpeed, 0);
     //float density = texture(normalMap, tcc);
 
-    vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
+
+    //vec3 normalEC = 2.0 * texture2D(normalMap, TexCoord).rgb - 1.0;
 
     normalEC = normalize(normalEC);
 

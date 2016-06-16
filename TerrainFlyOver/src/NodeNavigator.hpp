@@ -55,7 +55,7 @@ public:
 	}
     
     // speed: how much is the position changed with one key press
-    float speedU = -0.01;
+    float speedU = 0.0;
 	float speedV = 0.0;
 	float maxSpeed = 0.1;
 	float acceleration = 0.001;

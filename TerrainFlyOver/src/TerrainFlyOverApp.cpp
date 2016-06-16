@@ -113,7 +113,7 @@ TerrainFlyOverApp::setup()
 	auto rocksTex = gl::Texture2d::create(rocksImg);
 	rocksTex->setWrap(GL_REPEAT, GL_REPEAT);
 
-	auto grassImg = loadImage(loadAsset("grass.png"));
+	auto grassImg = loadImage(loadAsset("grass2.jpg"));
 	auto grassTex = gl::Texture2d::create(grassImg);
 	grassTex->setWrap(GL_REPEAT, GL_REPEAT);
 
@@ -156,7 +156,7 @@ TerrainFlyOverApp::setup()
 	bumpmap->texture("grass", grassTex);
 	bumpmap->texture("snow", snowTex);
 	bumpmap->texture("rocks", rocksTex);
-	bumpmap->uniform("speedVec", vec2(-0.01, 0));
+	bumpmap->uniform("speedVec", vec2(0, 0));
 
 	auto cube = ci::geom::Cube().size(10, 10, 10);
 	//mSkyBoxBatch = gl::Batch::create(geom::Cube().size(10, 10, 10), skyBoxGlsl);
@@ -165,7 +165,7 @@ TerrainFlyOverApp::setup()
 	auto cubeModel = rtr::Model::create({ cubeShape });
 	auto cube_ = Node::create({ cubeModel });
 
-	plane = ci::geom::Plane().subdivisions(vec2(1000, 1000)).size(vec2(10, 10));
+	plane = ci::geom::Plane().subdivisions(vec2(2000, 2000)).size(vec2(10, 10));
 	ShapeRef planeShape = rtr::Shape::create({ plane }, bumpmap);
 	ModelRef planemodel = rtr::Model::create({planeShape});
 	model_ = Node::create({ planemodel });
