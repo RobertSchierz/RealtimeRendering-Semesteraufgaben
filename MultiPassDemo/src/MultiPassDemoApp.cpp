@@ -7,10 +7,12 @@
 #include "cinder/gl/gl.h"
 
 #include "RTR/RTR.h"
+#include "NodeNavigator.hpp"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+using namespace rtr;
 
 // App template for the Real Time Rendering course, inherits from Cinder App.
 class MultiPassDemoApp : public App
@@ -25,7 +27,35 @@ class MultiPassDemoApp : public App
     // Called once for every frame to be rendered.
     void draw() override;
 
+	void keyDown(KeyEvent event) override {
+		cameraNav_.keyDown(event);
+	}
+
+	void keyUp(KeyEvent event) override {
+		cameraNav_.keyUp(event);
+	}
+
+	void mouseMove(MouseEvent event) override{
+		cameraMouseNav_.mouseMove(event);
+	}
+
+	void mouseDrag(MouseEvent event) override{
+		cameraMouseNav_.mouseDrag(event);
+	}
+
+	void mouseDown(MouseEvent event) override{
+		cameraMouseNav_.mouseDown(event);
+	}
+
+	void mouseWheel(MouseEvent event) override{
+		cameraMouseNav_.mouseWheel(event);
+	}
+
   private:
+	  NodeRef camera_, root_, scene_, model_;
+	  AbsolutePositionNavigator cameraNav_;
+	  TrackballNavigator cameraMouseNav_;
+
     // Rotation angle used for the animation.
     double angle = 0.0;
 
@@ -42,7 +72,7 @@ MultiPassDemoApp::setup()
 {
     // Arange for the window to always be on top. This helps with live shader
     // coding
-    getWindow()->setAlwaysOnTop();
+    //getWindow()->setAlwaysOnTop();
 
     // Create a live-reloading shader program.
     auto lambert = rtr::watcher.createWatchedProgram(
@@ -50,6 +80,15 @@ MultiPassDemoApp::setup()
 
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
+
+	model_ = Node::create({ duck });
+
+	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
+
+	camera_ = Node::create({}, translate(vec3(0, 0.2, 4)));
+	root_ = Node::create({}, mat4(), { scene_, camera_ });
+
+	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
 
     // The shader program can also be replaced after the fact.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
@@ -85,11 +124,14 @@ MultiPassDemoApp::draw()
     gl::clear(Color(0.5, 0.5, 0.5));
 
     // Setup a perspective projection camera.
-    CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
-    camera.lookAt(vec3(0, 0, 4), vec3(0, 0, 0));
+	// Setup a perspective projection camera.
+	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 20.0f);
+	gl::setMatrices(camera);
+	//mat4 toView = inverse(root_->find(camera_)[0].transform);
+	mat4 toView = inverse(cameraNav_.toWorld());
+	//ci::app::console() << "toView is: " << toView << std::endl;
 
-    // Push the view-projection matrix to the bottom of the matrix stack.
-    gl::setMatrices(camera);
+	gl::setViewMatrix(toView);
 
     // Enable depth buffering.
     gl::enableDepthWrite();
@@ -99,10 +141,10 @@ MultiPassDemoApp::draw()
     gl::pushModelMatrix();
 
     // Apply the rotation around the diagonal unit axis.
-    gl::rotate(angle, vec3(1, 1, 1));
+    //gl::rotate(angle, vec3(1, 1, 1));
 
     // Draw the duck model.
-    duck->draw();
+    scene_->draw();
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
