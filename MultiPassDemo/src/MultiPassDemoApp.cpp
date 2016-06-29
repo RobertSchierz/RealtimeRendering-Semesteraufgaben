@@ -27,19 +27,14 @@ class MultiPassDemoApp : public App
     // Called once for every frame to be rendered.
     void draw() override;
 
-	void keyDown(KeyEvent event) override {
-		cameraNav_.keyDown(event);
-	}
+	void keyDown(KeyEvent event) override;
+	void keyUp(KeyEvent event) override;
 
-	void keyUp(KeyEvent event) override {
-		cameraNav_.keyUp(event);
-	}
+	void mouseMove(MouseEvent event) override;
 
-	void mouseMove(MouseEvent event) override{
-		cameraMouseNav_.mouseMove(event);
-	}
+	
 
-	void mouseDrag(MouseEvent event) override{
+	/*void mouseDrag(MouseEvent event) override{
 		cameraMouseNav_.mouseDrag(event);
 	}
 
@@ -49,12 +44,25 @@ class MultiPassDemoApp : public App
 
 	void mouseWheel(MouseEvent event) override{
 		cameraMouseNav_.mouseWheel(event);
-	}
+	}*/
 
   private:
-	  NodeRef camera_, root_, scene_, model_;
+	  void doMovement();
+
+	  /*NodeRef camera_, root_, scene_, model_;
 	  AbsolutePositionNavigator cameraNav_;
-	  TrackballNavigator cameraMouseNav_;
+	  TrackballNavigator cameraMouseNav_;*/
+
+	  vec3 cameraPos = vec3(0, 0, 3);
+	  vec3 cameraFront = vec3(0, 0, -1);
+	  vec3 cameraUp = vec3(0, 1, 0);
+
+	  bool keys[1024];
+
+	  bool w = false;
+	  bool s = false;
+	  bool a = false;
+	  bool d = false;
 
     // Rotation angle used for the animation.
     double angle = 0.0;
@@ -81,14 +89,14 @@ MultiPassDemoApp::setup()
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
 
-	model_ = Node::create({ duck });
+	//model_ = Node::create({ duck });
 
-	scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
+	//scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
 
-	camera_ = Node::create({}, translate(vec3(0, 0.2, 4)));
-	root_ = Node::create({}, mat4(), { scene_, camera_ });
+	//camera_ = Node::create({}, translate(vec3(0, 0.2, 4)));
+	//root_ = Node::create({}, mat4(), { scene_, camera_ });
 
-	cameraNav_ = AbsolutePositionNavigator(camera_, root_);
+	//cameraNav_ = AbsolutePositionNavigator(camera_, root_);
 
     // The shader program can also be replaced after the fact.
     // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
@@ -123,15 +131,12 @@ MultiPassDemoApp::draw()
     // Clear background to gray.
     gl::clear(Color(0.5, 0.5, 0.5));
 
-    // Setup a perspective projection camera.
 	// Setup a perspective projection camera.
-	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 20.0f);
-	gl::setMatrices(camera);
-	//mat4 toView = inverse(root_->find(camera_)[0].transform);
-	mat4 toView = inverse(cameraNav_.toWorld());
-	//ci::app::console() << "toView is: " << toView << std::endl;
+	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
+	camera.lookAt(cameraPos, cameraPos + cameraFront);
 
-	gl::setViewMatrix(toView);
+	// Push the view-projection matrix to the bottom of the matrix stack.
+	gl::setMatrices(camera);
 
     // Enable depth buffering.
     gl::enableDepthWrite();
@@ -143,11 +148,57 @@ MultiPassDemoApp::draw()
     // Apply the rotation around the diagonal unit axis.
     //gl::rotate(angle, vec3(1, 1, 1));
 
+	doMovement();
+
     // Draw the duck model.
-    scene_->draw();
+    //scene_->draw();
+	duck->draw();
 
     // Restore the previous model-view-projection matrix.
     gl::popModelMatrix();
+}
+
+void 
+MultiPassDemoApp::doMovement(){
+	float cameraSpeed = 0.05;
+	if (keys[KeyEvent::KEY_w])
+		cameraPos += cameraSpeed * cameraFront;
+	if (keys[KeyEvent::KEY_a])
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (keys[KeyEvent::KEY_s])
+		cameraPos -= cameraSpeed * cameraFront;
+	if (keys[KeyEvent::KEY_d])
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+void
+MultiPassDemoApp::keyDown(KeyEvent event){
+	int key = event.getCode();
+	keys[key] = true;
+	/*switch (key) {
+	case KeyEvent::KEY_w:
+		w = true;
+		keys[key] = true;
+		break;
+	case KeyEvent::KEY_a:
+		a = true;
+		break;
+	case KeyEvent::KEY_s:
+		s = true;
+		break;
+	case KeyEvent::KEY_d:*/
+
+
+	//}
+}
+void
+MultiPassDemoApp::keyUp(KeyEvent event){
+	int key = event.getCode();
+	keys[key] = false;
+}
+void
+MultiPassDemoApp::mouseMove(MouseEvent event){
+
 }
 
 void
