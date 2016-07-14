@@ -98,6 +98,9 @@
     <ClInclude Include="..\src\NodeNavigator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\blocks\RTR\include\RTR\RTR.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">

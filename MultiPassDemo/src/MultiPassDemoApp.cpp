@@ -5,6 +5,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Camera.h"
 
 #include "RTR/RTR.h"
 #include "NodeNavigator.hpp"
@@ -34,20 +35,44 @@ class MultiPassDemoApp : public App
 
 	
 
-	/*void mouseDrag(MouseEvent event) override{
-		cameraMouseNav_.mouseDrag(event);
-	}
+	void mouseDrag(MouseEvent event) override;
 
-	void mouseDown(MouseEvent event) override{
-		cameraMouseNav_.mouseDown(event);
-	}
+	void mouseDown(MouseEvent event) override;
 
-	void mouseWheel(MouseEvent event) override{
+	/*void mouseWheel(MouseEvent event) override{
 		cameraMouseNav_.mouseWheel(event);
 	}*/
 
   private:
+	  //TEST
+
+	  void toggleCursorVisibility();
+
+	  //std::vector< ci::CallbackId >	mEventsCallbacks;
+
+	  float                           mSpeed;
+	  ci::CameraPersp                 mCurrentCam;
+	  ci::vec3                       mPositionVelocity;
+	  ci::vec2                       mMousePos;
+	  ci::quat                       mOrientation, mOrientationTo;
+	  double							mTimeElapsed, mLastTime;
+	  bool                            mUpIsDown, mDownIsDown, mLeftIsDown, mRightIsDown, mHigherIsDown, mLowerIsDown;
+	  bool                            mMouseDown;
+	  bool                            mCursorHidden;
+
+	  //TEST END
+
+
 	  void doMovement();
+
+	  bool firstMouse = true;
+
+	  vec2 lastPos;
+	  float lastX;
+	  float lastY;
+
+	  float yaw = 0;
+	  float pitch = 0;
 
 	  /*NodeRef camera_, root_, scene_, model_;
 	  AbsolutePositionNavigator cameraNav_;
@@ -69,6 +94,7 @@ class MultiPassDemoApp : public App
 
     // Tracking time between two draw() calls.
     double lastTime = getElapsedSeconds();
+	double deltaTime;
 
     // Model of the duck that is displayed.
     rtr::ModelRef duck;
@@ -81,6 +107,11 @@ MultiPassDemoApp::setup()
     // Arange for the window to always be on top. This helps with live shader
     // coding
     //getWindow()->setAlwaysOnTop();
+
+	//hideCursor();
+
+	lastPos = getWindowCenter();
+	
 
     // Create a live-reloading shader program.
     auto lambert = rtr::watcher.createWatchedProgram(
@@ -114,11 +145,11 @@ MultiPassDemoApp::update()
 {
     // Calculate elapsed time since last frame.
     double now = getElapsedSeconds();
-    double elapsed = now - lastTime;
+    deltaTime = now - lastTime;
     lastTime = now;
 
     // Animate the rotation angle.
-    angle += (M_PI / 10) * elapsed;
+    angle += (M_PI / 10) * deltaTime;
 
     // Check now whether any files changed.
     rtr::watcher.checkForChanges();
@@ -132,7 +163,7 @@ MultiPassDemoApp::draw()
     gl::clear(Color(0.5, 0.5, 0.5));
 
 	// Setup a perspective projection camera.
-	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 10.0f);
+	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 100.0f);
 	camera.lookAt(cameraPos, cameraPos + cameraFront);
 
 	// Push the view-projection matrix to the bottom of the matrix stack.
@@ -160,7 +191,7 @@ MultiPassDemoApp::draw()
 
 void 
 MultiPassDemoApp::doMovement(){
-	float cameraSpeed = 0.05;
+	float cameraSpeed = 3 * deltaTime;
 	if (keys[KeyEvent::KEY_w])
 		cameraPos += cameraSpeed * cameraFront;
 	if (keys[KeyEvent::KEY_a])
@@ -175,30 +206,142 @@ void
 MultiPassDemoApp::keyDown(KeyEvent event){
 	int key = event.getCode();
 	keys[key] = true;
-	/*switch (key) {
-	case KeyEvent::KEY_w:
-		w = true;
-		keys[key] = true;
-		break;
-	case KeyEvent::KEY_a:
-		a = true;
-		break;
-	case KeyEvent::KEY_s:
-		s = true;
-		break;
-	case KeyEvent::KEY_d:*/
-
-
-	//}
 }
 void
 MultiPassDemoApp::keyUp(KeyEvent event){
 	int key = event.getCode();
 	keys[key] = false;
 }
+
+void
+MultiPassDemoApp::mouseDown(MouseEvent event){
+
+}
+
+void
+MultiPassDemoApp::mouseDrag(MouseEvent event){
+//GLfloat xoffset = event.getX() - lastPos.x;
+//	GLfloat yoffset = lastPos.y - event.getY(); // Reversed since y-coordinates range from bottom to top
+//	lastPos.x = event.getX();
+//	lastPos.y = event.getY();
+//
+//	GLfloat sensitivity = 0.5f;
+//	xoffset *= sensitivity;
+//	yoffset *= sensitivity;
+//
+//	yaw += xoffset;
+//	pitch += yoffset;
+//
+//	if (pitch > 89.0f)
+//		pitch = 89.0f;
+//	if (pitch < -89.0f)
+//		pitch = -89.0f;
+//
+//	vec3 front;
+//	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+//	front.y = sin(glm::radians(pitch));
+//	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+//	cameraFront = glm::normalize(front);
+}
+
 void
 MultiPassDemoApp::mouseMove(MouseEvent event){
+	//TEST
+	float xpos = event.getX();
+	float ypos = event.getY();
 
+	console() << xpos << " " << ypos << endl;
+
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+		console() << "INIT " << xpos << " " << ypos << endl;
+	}
+
+	GLfloat xoffset = xpos - lastX;
+	GLfloat yoffset = lastY - ypos; // Reversed since y-coordinates go from bottom to left
+	lastX = xpos;
+	lastY = ypos;
+
+	console() << xoffset << " " << yoffset << endl;
+
+	GLfloat sensitivity = 0.05;	// Change this value to your liking
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	// Make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	console() << yaw << " " << pitch << endl;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(front);
+	//TEST END
+
+	//mMousePos = event.getPos();
+	//return false;
+
+
+	//vec2 mouseMovement = (getWindowCenter() - ((vec2)event.getPos())) * 0.01f;
+
+	//if (firstMouse) // this bool variable is initially set to true
+	//{
+	//	event.setPos(getWindowCenter());
+	//	lastPos.x = event.getX();
+	//	lastPos.y = event.getY();
+	//	firstMouse = false;
+	//}
+
+	//GLfloat xoffset = event.getX() - lastPos.x;
+	//GLfloat yoffset = lastPos.y - event.getY(); // Reversed since y-coordinates range from bottom to top
+	//lastPos.x = event.getX();
+	//lastPos.y = event.getY();
+
+	//GLfloat sensitivity = 0.5f;
+	//xoffset *= sensitivity;
+	//yoffset *= sensitivity;
+
+	//yaw += xoffset;
+	//pitch += yoffset;
+
+	//if (pitch > 89.0f)
+	//	pitch = 89.0f;
+	//if (pitch < -89.0f)
+	//	pitch = -89.0f;
+
+	///*vec3 front;
+	//front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	//front.y = sin(glm::radians(pitch));
+	//front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	//cameraFront = glm::normalize(front);*/
+
+	////Code aus Kommentaren von Camera Tutorials
+	//vec3 front;
+	//front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	//front.y = sin(glm::radians(pitch));
+	//front.z = -cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	//cameraFront = glm::normalize(front);
+
+
+	//event.setPos(getWindowCenter());
+
+	// Calculate elapsed time since last frame.
+	//vec2 currentPos = event.getPos();
+	//event.setPos(currentPos);
+	//lastPos = currentPos;
+
+	//SetCursorPos(App::get()->getWindowPosX() + App::get()->getWindowWidth() / 2.0f, App::get()->getWindowPosY() + App::get()->getWindowHeight() / 2.0f);
 }
 
 void
