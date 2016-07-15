@@ -10,6 +10,9 @@
 #include "RTR/RTR.h"
 #include "NodeNavigator.hpp"
 
+#include <windows.h>
+#include <winuser.h>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -108,7 +111,7 @@ MultiPassDemoApp::setup()
     // coding
     //getWindow()->setAlwaysOnTop();
 
-	//hideCursor();
+	hideCursor();
 
 	lastPos = getWindowCenter();
 	
@@ -220,28 +223,7 @@ MultiPassDemoApp::mouseDown(MouseEvent event){
 
 void
 MultiPassDemoApp::mouseDrag(MouseEvent event){
-//GLfloat xoffset = event.getX() - lastPos.x;
-//	GLfloat yoffset = lastPos.y - event.getY(); // Reversed since y-coordinates range from bottom to top
-//	lastPos.x = event.getX();
-//	lastPos.y = event.getY();
-//
-//	GLfloat sensitivity = 0.5f;
-//	xoffset *= sensitivity;
-//	yoffset *= sensitivity;
-//
-//	yaw += xoffset;
-//	pitch += yoffset;
-//
-//	if (pitch > 89.0f)
-//		pitch = 89.0f;
-//	if (pitch < -89.0f)
-//		pitch = -89.0f;
-//
-//	vec3 front;
-//	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-//	front.y = sin(glm::radians(pitch));
-//	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-//	cameraFront = glm::normalize(front);
+
 }
 
 void
@@ -249,6 +231,17 @@ MultiPassDemoApp::mouseMove(MouseEvent event){
 	//TEST
 	float xpos = event.getX();
 	float ypos = event.getY();
+
+	//Reset Cursor Position to middle
+	if (xpos < 50 || xpos > getWindowWidth() - 50 || ypos < 50 || ypos > getWindowHeight() - 50) {
+		POINT pt;
+		lastX = pt.x = getWindowWidth() / 2;
+		lastY = pt.y = getWindowHeight() / 2;
+
+		HWND hWnd = getRenderer()->getHwnd();
+		::ClientToScreen(hWnd, &pt);
+		::SetCursorPos(pt.x, pt.y);
+	}
 
 	console() << xpos << " " << ypos << endl;
 
@@ -287,61 +280,6 @@ MultiPassDemoApp::mouseMove(MouseEvent event){
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(front);
-	//TEST END
-
-	//mMousePos = event.getPos();
-	//return false;
-
-
-	//vec2 mouseMovement = (getWindowCenter() - ((vec2)event.getPos())) * 0.01f;
-
-	//if (firstMouse) // this bool variable is initially set to true
-	//{
-	//	event.setPos(getWindowCenter());
-	//	lastPos.x = event.getX();
-	//	lastPos.y = event.getY();
-	//	firstMouse = false;
-	//}
-
-	//GLfloat xoffset = event.getX() - lastPos.x;
-	//GLfloat yoffset = lastPos.y - event.getY(); // Reversed since y-coordinates range from bottom to top
-	//lastPos.x = event.getX();
-	//lastPos.y = event.getY();
-
-	//GLfloat sensitivity = 0.5f;
-	//xoffset *= sensitivity;
-	//yoffset *= sensitivity;
-
-	//yaw += xoffset;
-	//pitch += yoffset;
-
-	//if (pitch > 89.0f)
-	//	pitch = 89.0f;
-	//if (pitch < -89.0f)
-	//	pitch = -89.0f;
-
-	///*vec3 front;
-	//front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	//front.y = sin(glm::radians(pitch));
-	//front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	//cameraFront = glm::normalize(front);*/
-
-	////Code aus Kommentaren von Camera Tutorials
-	//vec3 front;
-	//front.x = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	//front.y = sin(glm::radians(pitch));
-	//front.z = -cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	//cameraFront = glm::normalize(front);
-
-
-	//event.setPos(getWindowCenter());
-
-	// Calculate elapsed time since last frame.
-	//vec2 currentPos = event.getPos();
-	//event.setPos(currentPos);
-	//lastPos = currentPos;
-
-	//SetCursorPos(App::get()->getWindowPosX() + App::get()->getWindowWidth() / 2.0f, App::get()->getWindowPosY() + App::get()->getWindowHeight() / 2.0f);
 }
 
 void
