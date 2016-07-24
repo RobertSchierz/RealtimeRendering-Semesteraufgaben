@@ -9,6 +9,7 @@
 
 #include "RTR/RTR.h"
 #include "NodeNavigator.hpp"
+#include "cinder/ImageIo.h"
 
 #include <windows.h>
 #include <winuser.h>
@@ -28,15 +29,21 @@ class MultiPassDemoApp : public App
     // Called for every frame to be rendered, before draw().
     void update() override;
 
+	void resize() override {
+		myFbo = makeFBO_();
+	}
+
     // Called once for every frame to be rendered.
     void draw() override;
+
+	void drawScene_();
+
+	void drawPostProcess_(gl::FboRef fbo_);
 
 	void keyDown(KeyEvent event) override;
 	void keyUp(KeyEvent event) override;
 
 	void mouseMove(MouseEvent event) override;
-
-	
 
 	void mouseDrag(MouseEvent event) override;
 
@@ -47,24 +54,9 @@ class MultiPassDemoApp : public App
 	}*/
 
   private:
-	  //TEST
 
-	  void toggleCursorVisibility();
-
-	  //std::vector< ci::CallbackId >	mEventsCallbacks;
-
-	  float                           mSpeed;
-	  ci::CameraPersp                 mCurrentCam;
-	  ci::vec3                       mPositionVelocity;
-	  ci::vec2                       mMousePos;
-	  ci::quat                       mOrientation, mOrientationTo;
-	  double							mTimeElapsed, mLastTime;
-	  bool                            mUpIsDown, mDownIsDown, mLeftIsDown, mRightIsDown, mHigherIsDown, mLowerIsDown;
-	  bool                            mMouseDown;
-	  bool                            mCursorHidden;
-
-	  //TEST END
-
+	  gl::FboRef makeFBO_();
+	  void renderSceneToFbo();
 
 	  void doMovement();
 
@@ -77,8 +69,8 @@ class MultiPassDemoApp : public App
 	  float yaw = 0;
 	  float pitch = 0;
 
-	  /*NodeRef camera_, root_, scene_, model_;
-	  AbsolutePositionNavigator cameraNav_;
+	  NodeRef camera_, root_, scene_, model_;
+	  /*AbsolutePositionNavigator cameraNav_;
 	  TrackballNavigator cameraMouseNav_;*/
 
 	  vec3 cameraPos = vec3(0, 0, 3);
@@ -101,6 +93,13 @@ class MultiPassDemoApp : public App
 
     // Model of the duck that is displayed.
     rtr::ModelRef duck;
+	rtr::ModelRef scene;
+
+	gl::FboRef lastFbo;
+	gl::FboRef myFbo;
+
+	gl::GlslProgRef motionBlur;
+	rtr::MaterialRef motionBlurMaterial;
 };
 
 // Place all one-time setup code here.
@@ -113,17 +112,24 @@ MultiPassDemoApp::setup()
 
 	hideCursor();
 
-	lastPos = getWindowCenter();
-	
+	lastPos = getWindowCenter();	
 
     // Create a live-reloading shader program.
     auto lambert = rtr::watcher.createWatchedProgram(
       { getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 
+	motionBlur = rtr::watcher.createWatchedProgram(
+	{ getAssetPath("blur.vert"), getAssetPath("blur.frag") });
+	motionBlurMaterial = rtr::Material::create(motionBlur);
+
+	myFbo = makeFBO_();
+	lastFbo = makeFBO_();
+
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
+	scene = rtr::loadObjFile(getAssetPath("Scene/Scene.obj"), true, lambert);
 
-	//model_ = Node::create({ duck });
+	model_ = Node::create({ scene }, glm::scale(vec3(5,5,5) ));
 
 	//scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
 
@@ -132,14 +138,20 @@ MultiPassDemoApp::setup()
 
 	//cameraNav_ = AbsolutePositionNavigator(camera_, root_);
 
-    // The shader program can also be replaced after the fact.
-    // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
-    // for (auto& shape : duck->shapes)
-    //     shape->replaceProgram(lambert);
+}
 
-    // Try this version of the duck to see the default shader for OBJ
-    // models.
-    // duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"));
+gl::FboRef MultiPassDemoApp::makeFBO_(){
+	auto size = getWindowSize();
+	auto format = gl::Fbo::Format().colorTexture().depthTexture();
+	auto fbo = gl::Fbo::create(size.x, size.y, format);
+
+	auto colorTex = fbo->getColorTexture();
+	auto depthTex = fbo->getDepthTexture();
+	motionBlurMaterial->texture("depthTex", depthTex);
+	motionBlurMaterial->texture("tex", colorTex);
+	motionBlurMaterial->uniform("resolution", size.x);
+
+	return fbo;
 }
 
 // Place all non-OpenGL once-per-frame code here.
@@ -162,8 +174,15 @@ MultiPassDemoApp::update()
 void
 MultiPassDemoApp::draw()
 {
-    // Clear background to gray.
-    gl::clear(Color(0.5, 0.5, 0.5));
+	myFbo->bindFramebuffer();
+	drawScene_();
+	myFbo->unbindFramebuffer();
+	drawPostProcess_(myFbo);
+}
+
+void MultiPassDemoApp::drawScene_(){
+	// Clear background to gray.
+	gl::clear(Color(0.5, 0.5, 0.5));
 
 	// Setup a perspective projection camera.
 	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 100.0f);
@@ -172,24 +191,41 @@ MultiPassDemoApp::draw()
 	// Push the view-projection matrix to the bottom of the matrix stack.
 	gl::setMatrices(camera);
 
-    // Enable depth buffering.
-    gl::enableDepthWrite();
-    gl::enableDepthRead();
+	// Enable depth buffering.
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
 
-    // Save current model-view-projection matrix by pushing a new matrix on top.
-    gl::pushModelMatrix();
 
-    // Apply the rotation around the diagonal unit axis.
-    //gl::rotate(angle, vec3(1, 1, 1));
+	// Save current model-view-projection matrix by pushing a new matrix on top.
+	gl::pushModelMatrix();
+
+	// Apply the rotation around the diagonal unit axis.
+	//gl::rotate(angle, vec3(1, 1, 1));
 
 	doMovement();
+	//renderSceneToFbo();
 
-    // Draw the duck model.
-    //scene_->draw();
+	// Draw the duck model.
+	//scene_->draw();
 	duck->draw();
+	model_->draw();
 
-    // Restore the previous model-view-projection matrix.
-    gl::popModelMatrix();
+	// Restore the previous model-view-projection matrix.
+	gl::popModelMatrix();
+}
+
+void MultiPassDemoApp::drawPostProcess_(gl::FboRef fbo_){
+	//set matrices
+	gl::pushMatrices();
+	gl::clear(Color(0, 0, 0));
+	gl::setMatricesWindow(getWindowSize());
+
+	//draw full-screen textures rectangle
+	motionBlurMaterial->bind();
+	gl::drawSolidRect(myFbo->getBounds());
+
+	//restore matrices
+	gl::popMatrices();
 }
 
 void 
@@ -243,14 +279,14 @@ MultiPassDemoApp::mouseMove(MouseEvent event){
 		::SetCursorPos(pt.x, pt.y);
 	}
 
-	console() << xpos << " " << ypos << endl;
+	//console() << xpos << " " << ypos << endl;
 
 	if (firstMouse)
 	{
 		lastX = xpos;
 		lastY = ypos;
 		firstMouse = false;
-		console() << "INIT " << xpos << " " << ypos << endl;
+		//console() << "INIT " << xpos << " " << ypos << endl;
 	}
 
 	GLfloat xoffset = xpos - lastX;
@@ -258,7 +294,7 @@ MultiPassDemoApp::mouseMove(MouseEvent event){
 	lastX = xpos;
 	lastY = ypos;
 
-	console() << xoffset << " " << yoffset << endl;
+	//console() << xoffset << " " << yoffset << endl;
 
 	GLfloat sensitivity = 0.05;	// Change this value to your liking
 	xoffset *= sensitivity;
@@ -273,7 +309,7 @@ MultiPassDemoApp::mouseMove(MouseEvent event){
 	if (pitch < -89.0f)
 		pitch = -89.0f;
 
-	console() << yaw << " " << pitch << endl;
+	//console() << yaw << " " << pitch << endl;
 
 	glm::vec3 front;
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
