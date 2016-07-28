@@ -54,9 +54,7 @@ class MultiPassDemoApp : public App
 
 	void mouseUp(MouseEvent event) override;
 
-	/*void mouseWheel(MouseEvent event) override{
-		cameraMouseNav_.mouseWheel(event);
-	}*/
+	void mouseWheel(MouseEvent event) override;
 
   private:
 
@@ -76,7 +74,7 @@ class MultiPassDemoApp : public App
 	  NodeRef camera_, root_, scene_, model_;
 	  /*AbsolutePositionNavigator cameraNav_;
 	  TrackballNavigator cameraMouseNav_;*/
-
+	  float fov = 45.0f;
 	  vec3 cameraPos = vec3(0, 0, 3);
 	  vec3 cameraFront = vec3(0, 0, -1);
 	  vec3 cameraUp = vec3(0, 1, 0);
@@ -199,7 +197,7 @@ void MultiPassDemoApp::drawScene_(){
 	gl::clear(Color(0.5, 0.5, 0.5));
 
 	// Setup a perspective projection camera.
-	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.01f, 100.0f);
+	CameraPersp camera(getWindowWidth(), getWindowHeight(), fov, 0.01f, 100.0f);
 	camera.lookAt(cameraPos, cameraPos + cameraFront);
 
 	// Push the view-projection matrix to the bottom of the matrix stack.
@@ -293,13 +291,26 @@ void
 MultiPassDemoApp::mouseDown(MouseEvent event){
 	if (event.isRightDown()){
 		blurMaterial->uniform("isAiming", true);
+		fov = 35.0f;
 	}
 }
 
 void MultiPassDemoApp::mouseUp(MouseEvent event){
 	if (!event.isRightDown()){
 		blurMaterial->uniform("isAiming", false);
+		fov = 45.0f;
 	}
+}
+
+void MultiPassDemoApp::mouseWheel(MouseEvent event){
+	
+	float scrolled = event.getWheelIncrement();
+	if (fov >= 1.0f && fov <= 45.0f)
+		fov -= scrolled;
+	if (fov <= 1.0f)
+		fov = 1.0f;
+	if (fov >= 45.0f)
+		fov = 45.0f;
 }
 
 void
