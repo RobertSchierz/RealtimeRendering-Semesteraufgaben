@@ -31,6 +31,7 @@ class MultiPassDemoApp : public App
 
 	void resize() override {
 		myFbo = makeFBO_();
+		//secondFbo = makeFBO_();
 	}
 
     // Called once for every frame to be rendered.
@@ -39,6 +40,8 @@ class MultiPassDemoApp : public App
 	void drawScene_();
 
 	void drawPostProcess_(gl::FboRef fbo_);
+
+	void drawSecondPostProcess_(gl::FboRef fbo_);
 
 	void keyDown(KeyEvent event) override;
 	void keyUp(KeyEvent event) override;
@@ -56,7 +59,6 @@ class MultiPassDemoApp : public App
   private:
 
 	  gl::FboRef makeFBO_();
-	  void renderSceneToFbo();
 
 	  void doMovement();
 
@@ -94,8 +96,9 @@ class MultiPassDemoApp : public App
     // Model of the duck that is displayed.
     rtr::ModelRef duck;
 	rtr::ModelRef scene;
+	rtr::ModelRef blaster;
 
-	gl::FboRef lastFbo;
+	gl::FboRef secondFbo;
 	gl::FboRef myFbo;
 
 	gl::GlslProgRef motionBlur;
@@ -109,6 +112,7 @@ MultiPassDemoApp::setup()
     // Arange for the window to always be on top. This helps with live shader
     // coding
     //getWindow()->setAlwaysOnTop();
+	//setFullScreen(true);
 
 	hideCursor();
 
@@ -119,17 +123,19 @@ MultiPassDemoApp::setup()
       { getAssetPath("lambert.vert"), getAssetPath("lambert.frag") });
 
 	motionBlur = rtr::watcher.createWatchedProgram(
-	{ getAssetPath("blur.vert"), getAssetPath("blur.frag") });
+	{ getAssetPath("blur_vert.vert"), getAssetPath("blur_frag.frag") });
 	motionBlurMaterial = rtr::Material::create(motionBlur);
 
 	myFbo = makeFBO_();
-	lastFbo = makeFBO_();
+	secondFbo = makeFBO_();
+
 
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
 	scene = rtr::loadObjFile(getAssetPath("Scene/Scene.obj"), true, lambert);
+	blaster = rtr::loadObjFile(getAssetPath("Pistol/Pistol.obj"), true, lambert);
 
-	model_ = Node::create({ scene }, glm::scale(vec3(5,5,5) ));
+	model_ = Node::create({ scene }, glm::scale(vec3(4,4,4) ));
 
 	//scene_ = Node::create({}, glm::rotate(toRadians(-90.0f), vec3(0, 1, 0)), { model_ });
 
@@ -148,8 +154,9 @@ gl::FboRef MultiPassDemoApp::makeFBO_(){
 	auto colorTex = fbo->getColorTexture();
 	auto depthTex = fbo->getDepthTexture();
 	motionBlurMaterial->texture("depthTex", depthTex);
+	
 	motionBlurMaterial->texture("tex", colorTex);
-	motionBlurMaterial->uniform("resolution", size.x);
+	//motionBlurMaterial->uniform("resolution", size.x);
 
 	return fbo;
 }
@@ -177,7 +184,10 @@ MultiPassDemoApp::draw()
 	myFbo->bindFramebuffer();
 	drawScene_();
 	myFbo->unbindFramebuffer();
+	secondFbo->bindFramebuffer();
 	drawPostProcess_(myFbo);
+	secondFbo->unbindFramebuffer();
+	drawSecondPostProcess_(secondFbo);
 }
 
 void MultiPassDemoApp::drawScene_(){
@@ -185,7 +195,7 @@ void MultiPassDemoApp::drawScene_(){
 	gl::clear(Color(0.5, 0.5, 0.5));
 
 	// Setup a perspective projection camera.
-	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.1f, 100.0f);
+	CameraPersp camera(getWindowWidth(), getWindowHeight(), 35.0f, 0.01f, 100.0f);
 	camera.lookAt(cameraPos, cameraPos + cameraFront);
 
 	// Push the view-projection matrix to the bottom of the matrix stack.
@@ -203,11 +213,11 @@ void MultiPassDemoApp::drawScene_(){
 	//gl::rotate(angle, vec3(1, 1, 1));
 
 	doMovement();
-	//renderSceneToFbo();
 
 	// Draw the duck model.
 	//scene_->draw();
-	duck->draw();
+	//duck->draw();
+	//blaster->draw();
 	model_->draw();
 
 	// Restore the previous model-view-projection matrix.
@@ -220,9 +230,27 @@ void MultiPassDemoApp::drawPostProcess_(gl::FboRef fbo_){
 	gl::clear(Color(0, 0, 0));
 	gl::setMatricesWindow(getWindowSize());
 
+	motionBlurMaterial->uniform("sampleOffset", vec2(1.0f / fbo_->getWidth(), 0.0f));
+
 	//draw full-screen textures rectangle
 	motionBlurMaterial->bind();
-	gl::drawSolidRect(myFbo->getBounds());
+	//gl::drawSolidRect(fbo_->getBounds());
+
+	//restore matrices
+	gl::popMatrices();
+}
+
+void MultiPassDemoApp::drawSecondPostProcess_(gl::FboRef fbo_){
+	//set matrices
+	gl::pushMatrices();
+	gl::clear(Color(0, 0, 0));
+	gl::setMatricesWindow(getWindowSize());
+
+	motionBlurMaterial->uniform("sampleOffset", vec2(0.0f, 1.0f / fbo_->getHeight()));
+
+	//draw full-screen textures rectangle
+	motionBlurMaterial->bind();
+	gl::drawSolidRect(fbo_->getBounds());
 
 	//restore matrices
 	gl::popMatrices();
@@ -244,7 +272,14 @@ MultiPassDemoApp::doMovement(){
 void
 MultiPassDemoApp::keyDown(KeyEvent event){
 	int key = event.getCode();
+
+	if (key == KeyEvent::KEY_ESCAPE){
+		exit(0);
+	} else{
 	keys[key] = true;
+	}
+
+	
 }
 void
 MultiPassDemoApp::keyUp(KeyEvent event){
