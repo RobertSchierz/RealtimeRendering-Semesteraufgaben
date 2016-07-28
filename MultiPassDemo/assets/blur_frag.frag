@@ -3,6 +3,8 @@
 uniform sampler2D	tex;
 uniform sampler2D	depthTex;
 uniform vec2		sampleOffset;
+uniform float 		depthValue;
+uniform bool		isAiming;
 
 
 in vec2 texCoord;
@@ -42,7 +44,7 @@ void main()
 	vec3 depth = texture2D(depthTex, texCoord).rgb;
 	vec3 screenTex = texture2D(tex, texCoord).rgb;
 
-	if(depth.x > 0.995){
+	if(depth.x < depthValue && isAiming){
 		for( int s = 0; s < 21; ++s ) {
 			sum += texture2D( tex, texCoord.st + baseOffset + offset ).rgb * weights[s];
 			offset += sampleOffset;

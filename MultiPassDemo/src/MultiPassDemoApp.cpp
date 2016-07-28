@@ -52,6 +52,8 @@ class MultiPassDemoApp : public App
 
 	void mouseDown(MouseEvent event) override;
 
+	void mouseUp(MouseEvent event) override;
+
 	/*void mouseWheel(MouseEvent event) override{
 		cameraMouseNav_.mouseWheel(event);
 	}*/
@@ -102,7 +104,7 @@ class MultiPassDemoApp : public App
 	gl::FboRef myFbo;
 
 	gl::GlslProgRef motionBlur;
-	rtr::MaterialRef motionBlurMaterial;
+	rtr::MaterialRef blurMaterial;
 };
 
 // Place all one-time setup code here.
@@ -124,7 +126,7 @@ MultiPassDemoApp::setup()
 
 	motionBlur = rtr::watcher.createWatchedProgram(
 	{ getAssetPath("blur_vert.vert"), getAssetPath("blur_frag.frag") });
-	motionBlurMaterial = rtr::Material::create(motionBlur);
+	blurMaterial = rtr::Material::create(motionBlur);
 
 	myFbo = makeFBO_();
 	secondFbo = makeFBO_();
@@ -133,7 +135,7 @@ MultiPassDemoApp::setup()
     // Load the duck model and use the lambert shader on it.
     duck = rtr::loadObjFile(getAssetPath("duck/duck.obj"), true, lambert);
 	scene = rtr::loadObjFile(getAssetPath("Scene/Scene.obj"), true, lambert);
-	blaster = rtr::loadObjFile(getAssetPath("Pistol/Pistol.obj"), true, lambert);
+	//blaster = rtr::loadObjFile(getAssetPath("Pistol/Pistol.obj"), true, lambert);
 
 	model_ = Node::create({ scene }, glm::scale(vec3(4,4,4) ));
 
@@ -153,10 +155,12 @@ gl::FboRef MultiPassDemoApp::makeFBO_(){
 
 	auto colorTex = fbo->getColorTexture();
 	auto depthTex = fbo->getDepthTexture();
-	motionBlurMaterial->texture("depthTex", depthTex);
+	blurMaterial->texture("depthTex", depthTex);
+	blurMaterial->uniform("depthValue", 0.995f);
+	blurMaterial->uniform("isAiming", false);
 	
-	motionBlurMaterial->texture("tex", colorTex);
-	//motionBlurMaterial->uniform("resolution", size.x);
+	blurMaterial->texture("tex", colorTex);
+	//blurMaterial->uniform("resolution", size.x);
 
 	return fbo;
 }
@@ -230,10 +234,10 @@ void MultiPassDemoApp::drawPostProcess_(gl::FboRef fbo_){
 	gl::clear(Color(0, 0, 0));
 	gl::setMatricesWindow(getWindowSize());
 
-	motionBlurMaterial->uniform("sampleOffset", vec2(1.0f / fbo_->getWidth(), 0.0f));
+	blurMaterial->uniform("sampleOffset", vec2(1.0f / fbo_->getWidth(), 0.0f));
 
 	//draw full-screen textures rectangle
-	motionBlurMaterial->bind();
+	blurMaterial->bind();
 	//gl::drawSolidRect(fbo_->getBounds());
 
 	//restore matrices
@@ -246,10 +250,10 @@ void MultiPassDemoApp::drawSecondPostProcess_(gl::FboRef fbo_){
 	gl::clear(Color(0, 0, 0));
 	gl::setMatricesWindow(getWindowSize());
 
-	motionBlurMaterial->uniform("sampleOffset", vec2(0.0f, 1.0f / fbo_->getHeight()));
+	blurMaterial->uniform("sampleOffset", vec2(0.0f, 1.0f / fbo_->getHeight()));
 
 	//draw full-screen textures rectangle
-	motionBlurMaterial->bind();
+	blurMaterial->bind();
 	gl::drawSolidRect(fbo_->getBounds());
 
 	//restore matrices
@@ -275,11 +279,9 @@ MultiPassDemoApp::keyDown(KeyEvent event){
 
 	if (key == KeyEvent::KEY_ESCAPE){
 		exit(0);
-	} else{
-	keys[key] = true;
+	}else{
+		keys[key] = true;
 	}
-
-	
 }
 void
 MultiPassDemoApp::keyUp(KeyEvent event){
@@ -289,7 +291,15 @@ MultiPassDemoApp::keyUp(KeyEvent event){
 
 void
 MultiPassDemoApp::mouseDown(MouseEvent event){
+	if (event.isRightDown()){
+		blurMaterial->uniform("isAiming", true);
+	}
+}
 
+void MultiPassDemoApp::mouseUp(MouseEvent event){
+	if (!event.isRightDown()){
+		blurMaterial->uniform("isAiming", false);
+	}
 }
 
 void
